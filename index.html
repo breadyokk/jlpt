@@ -17,32 +17,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding-bottom: 80px; }
 
-/* ── Setup Banner ── */
-.setup-banner {
-  background: #1C1A16; color: #fff;
-  padding: 14px 24px;
-  display: flex; align-items: center; gap: 12px;
-  flex-wrap: wrap;
-}
-.setup-label { font-family: 'DM Mono', monospace; font-size: 11px; color: #888; white-space: nowrap; }
-.setup-input {
-  flex: 1; min-width: 280px;
-  font-family: 'DM Mono', monospace; font-size: 12px;
-  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
-  border-radius: 6px; padding: 7px 12px; color: #fff; outline: none;
-}
-.setup-input::placeholder { color: #555; }
-.setup-input:focus { border-color: rgba(255,255,255,.4); }
-.setup-save {
-  font-family: 'Noto Sans JP', sans-serif; font-size: 12px;
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
-  color: #fff; border-radius: 6px; padding: 7px 14px; cursor: pointer;
-  white-space: nowrap; transition: background .15s;
-}
-.setup-save:hover { background: rgba(255,255,255,.22); }
-.setup-status { font-size: 11px; color: #4CAF50; display: none; }
-.setup-status.on { display: block; }
-.setup-warn { font-size: 11px; color: #FF9800; }
+
 
 /* ── Header ── */
 .header {
@@ -102,7 +77,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 /* ── Kanji Reveal ── */
 .k { position: relative; cursor: pointer; border-bottom: 1px dashed var(--ink3); transition: border-color .15s; display: inline; }
 .k:hover { border-bottom-color: var(--red); }
-.k-popup { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; font-size: 12px; white-space: nowrap; z-index: 200; font-family: 'Noto Sans JP', sans-serif; line-height: 1.8; box-shadow: 0 4px 16px rgba(0,0,0,.2); pointer-events: none; }
+.k-popup { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; font-size: 12px; white-space: nowrap; z-index: 200; font-family: 'Noto Sans JP', sans-serif; line-height: 1.8; box-shadow: 0 4px 16px rgba(0,0,0,.2); pointer-events: all; }
 .k-popup::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
 .k.open .k-popup { display: block; }
 .k-popup .k-reading { font-size: 10px; color: #aaa; }
@@ -111,7 +86,11 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 .add-vocab:hover { background: rgba(255,255,255,.3); }
 .add-vocab.saved { background: #2D5233; border-color: #2D5233; }
 
-/* ── Questions ── */
+.vocab-bar { display: none; position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-family: 'Noto Sans JP', sans-serif; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,.2); align-items: center; gap: 10px; }
+.vocab-bar.on { display: flex; }
+.vocab-count { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: #fff; }
+.vocab-dl { font-size: 11px; color: rgba(255,255,255,.6); cursor: pointer; text-decoration: underline; }
+.vocab-dl:hover { color: #fff; }
 .q-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-bottom: 10px; }
 .q-context { font-size: 12px; color: var(--ink2); background: var(--amber-light); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; line-height: 1.8; border-left: 2px solid var(--amber); }
 .q-text { font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 2.4; margin-bottom: 16px; }
@@ -194,14 +173,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 </head>
 <body>
 
-<!-- ── Dev Setup Banner ── -->
-<div class="setup-banner">
-  <span class="setup-label">DEV · API KEY</span>
-  <input class="setup-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…  （貼入你的 Anthropic API Key）">
-  <button class="setup-save" onclick="saveKey()">儲存</button>
-  <span class="setup-status" id="key-status">✓ 已儲存</span>
-  <span class="setup-warn">⚠ 僅限本地測試，正式部署請改用後端 proxy</span>
-</div>
+
 
 <!-- ── Header ── -->
 <header class="header">
@@ -361,27 +333,46 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
   <div class="result-body" id="result-body"></div>
 </div>
 <button class="obs-btn" id="obs-btn" style="display:none" onclick="copyObs()">
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-  複製錯題筆記 → 存入 Obsidian
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  下載今日學習紀錄 (.md)
 </button>
+<!-- Vocab bar -->
+<div class="vocab-bar" id="vocab-bar">
+  <span class="vocab-count" id="vocab-count">0</span>
+  <span style="color:rgba(255,255,255,.7);font-size:13px;">個單字已加入</span>
+  <span class="vocab-dl" onclick="downloadVocab()">單獨下載單字本</span>
+</div>
+
 <div style="height:60px"></div>
 </div>
 
 <script>
-// ── API Key ──
-function saveKey() {
-  const k = document.getElementById('api-key-input').value.trim();
-  if (!k) return;
-  sessionStorage.setItem('ak', k);
-  document.getElementById('key-status').classList.add('on');
-  setTimeout(() => document.getElementById('key-status').classList.remove('on'), 2000);
-}
-function getKey() { return sessionStorage.getItem('ak') || ''; }
+// ── Local grading rules for Q4 & Q5 ──
+const Q4_RULES = {
+  required: ['ようになり','ようになっ','ようになる'],
+  good: ['一人で','電車','乗れる','乗られる','地下鉄'],
+  corrections: {
+    noYou: '一人で電車に乗れるようになりました。',
+    noSubject: '主語（一人で）を加えるとより自然です。',
+  }
+};
+const Q5_RULES = {
+  correct_keywords: [
+    ['自然','変化'], ['自然','なる'], ['勝手','変わ'],
+    ['意識','する'], ['刻意','做'], ['自然','變化'],
+    ['自然の変化','ようになる'], ['ようにする','意志'],
+    ['自然','になる'], ['刻意','努力']
+  ],
+  tip: '覚え方：ようになる＝気づいたら変わっていた。ようにする＝意識して行動する。'
+};
 
 // ── State ──
 const S = { c2a: null, c2b: null, q3ok: null, r4: null, r5: null, q4v: '', q5v: '' };
 
 // ── Kanji ──
+// Session vocab list (resets each page load)
+S.vocab = [];
+
 function toggleK(el) {
   const was = el.classList.contains('open');
   document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open'));
@@ -392,15 +383,49 @@ function toggleK(el) {
       p.className = 'k-popup';
       el.appendChild(p);
     }
-    p.innerHTML = `<div class="k-reading">${el.dataset.r}</div><div class="k-meaning">${el.dataset.m}</div><div class="add-vocab" onclick="addV(this,'${el.dataset.m}','${el.dataset.r}')">＋ 單字本</div>`;
+    // Get surrounding sentence as example
+    const sentence = el.closest('.ex-jp, .scene-text, .q-text') || el.parentElement;
+    const exText = sentence ? sentence.textContent.trim().slice(0, 60) : '';
+    p.innerHTML = `
+      <div class="k-reading">${el.dataset.r}</div>
+      <div class="k-meaning">${el.dataset.m}</div>
+      <div class="add-vocab" id="av-${el.dataset.r}" onclick="addV(event, this, '${el.dataset.m}', '${el.dataset.r}', \`${exText.replace(/`/g,"'")}\`)">＋ 加入單字本</div>`;
     el.classList.add('open');
   }
 }
-document.addEventListener('click', e => { if (!e.target.closest('.k')) document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open')); });
-function addV(btn, m, r) {
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.k') && !e.target.closest('.k-popup')) {
+    document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open'));
+  }
+});
+
+function addV(event, btn, m, r, ex) {
+  event.stopPropagation(); // prevent popup closing
+  if (btn.classList.contains('saved')) return;
   btn.textContent = '✓ 已加入'; btn.classList.add('saved');
-  const saved = JSON.parse(localStorage.getItem('vocab') || '[]');
-  if (!saved.find(v => v.m === m)) { saved.push({ m, r, date: new Date().toISOString().slice(0,10) }); localStorage.setItem('vocab', JSON.stringify(saved)); }
+
+  // Add to session array if not duplicate
+  if (!S.vocab.find(v => v.r === r)) {
+    S.vocab.push({ m, r, ex, date: new Date().toISOString().slice(0,10) });
+  }
+
+  // Update counter bar
+  document.getElementById('vocab-count').textContent = S.vocab.length;
+  document.getElementById('vocab-bar').classList.add('on');
+}
+
+function downloadVocab() {
+  if (!S.vocab.length) return;
+  const today = new Date().toISOString().slice(0,10);
+  let md = `---\ndate: ${today}\ntype: 單字本\ntag: #單字 #Week1\n---\n\n# ${today} 單字本\n\n| 單字 | 讀音 | 意思 | 例句 |\n|------|------|------|------|\n`;
+  S.vocab.forEach(v => { md += `| ${v.m.split('・')[0]} | ${v.r} | ${v.m.split('・')[1] || ''} | ${v.ex} |\n`; });
+
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${today}-單字本.md`; a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Choices ──
@@ -447,23 +472,21 @@ async function submitAll() {
   document.getElementById('sub-btn').disabled = true;
   document.getElementById('prog').style.width = '70%';
 
-  // Finalize Q3
   const q3v = document.getElementById('q3').value.trim();
   if (S.q3ok === null) { S.q3ok = ['ようになりました','ようになった'].some(c => q3v.includes(c)); }
 
-  // Grade Q4 & Q5
   S.q4v = document.getElementById('q4').value.trim();
   S.q5v = document.getElementById('q5').value.trim();
 
   document.getElementById('ld4').classList.add('on');
-  S.r4 = await grade(S.q4v,
-    `題目：用「ようになる」描述「以前不敢一個人搭地鐵，來日本半年後完全沒問題了」這個變化。\n學生答案：${S.q4v}`);
+  await sleep(400);
+  S.r4 = gradeQ4(S.q4v);
   document.getElementById('ld4').classList.remove('on');
   showFb(document.getElementById('fb4'), S.r4.ok, S.r4.msg);
 
   document.getElementById('ld5').classList.add('on');
-  S.r5 = await grade(S.q5v,
-    `題目：用自己的話說明「ようになる」和「ようにする」的差異。\n學生答案：${S.q5v}`);
+  await sleep(400);
+  S.r5 = gradeQ5(S.q5v);
   document.getElementById('ld5').classList.remove('on');
   showFb(document.getElementById('fb5'), S.r5.ok, S.r5.msg);
 
@@ -471,30 +494,53 @@ async function submitAll() {
   showResults();
 }
 
-async function grade(answer, ctx) {
-  if (!answer || answer.length < 2) return { ok: false, msg: '未作答。' };
-  const key = getKey();
-  if (!key) {
-    // Fallback without API
-    const hasYou = answer.includes('ようになり') || answer.includes('ようになっ') || answer.includes('ようになる') || answer.includes('自然') || answer.includes('変化');
-    return { ok: hasYou, msg: hasYou ? '包含關鍵概念，基本正確。（請設定 API Key 以獲得詳細批改）' : '請確認是否使用了「ようになる」語法。（請設定 API Key 以獲得詳細批改）' };
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function gradeQ4(ans) {
+  if (!ans || ans.length < 3) return { ok: false, msg: '未作答。' };
+  const hasYou = Q4_RULES.required.some(k => ans.includes(k));
+  const goodCount = Q4_RULES.good.filter(k => ans.includes(k)).length;
+
+  if (!hasYou) {
+    return {
+      ok: false,
+      msg: `「ようになる」が見当たりません。<br><br>✏️ 例：<em>${Q4_RULES.corrections.noYou}</em><br><br>💡 能力の自然変化を表すとき → 動詞可能形 ＋ ようになりました。`
+    };
   }
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 500,
-        messages: [{ role: 'user', content: `你是 JLPT N3 日語老師，批改以下學生作業。\n${ctx}\n\n只輸出 JSON，不要其他文字：\n{"correct":true/false,"explanation_zh":"中文解說2-3句","correction":"修正後的日文（若正確留空）","tip":"1句學習提示"}` }]
-      })
-    });
-    const data = await res.json();
-    const p = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
-    return { ok: p.correct, msg: `${p.explanation_zh}${p.correction ? `<br><br>✏️ 修正：<em>${p.correction}</em>` : ''}<br><br>💡 ${p.tip}` };
-  } catch(e) {
-    const hasYou = answer.includes('ようになり') || answer.includes('ようになっ') || answer.includes('ようになる') || answer.includes('自然') || answer.includes('変化');
-    return { ok: hasYou, msg: hasYou ? '包含關鍵概念，方向正確。（網路問題，無法取得詳細解析）' : '請確認語法使用。（網路問題，無法取得詳細解析）' };
+  if (goodCount >= 2) {
+    return {
+      ok: true,
+      msg: `よくできました！文の構造も自然です。<br><br>💡 「ようになる」は能力が自然に身についたことを表す、N3 最重要文法の一つです。`
+    };
   }
+  return {
+    ok: true,
+    msg: `「ようになる」を正しく使えています。<br><br>✏️ より自然な表現：<em>${Q4_RULES.corrections.noYou}</em><br><br>💡 「一人で〜できる」という表現を一緒に覚えましょう。`
+  };
+}
+
+function gradeQ5(ans) {
+  if (!ans || ans.length < 3) return { ok: false, msg: '未作答。' };
+  const lower = ans.toLowerCase();
+  const matched = Q5_RULES.correct_keywords.some(pair =>
+    pair.every(k => lower.includes(k) || ans.includes(k))
+  );
+  // Also check for single strong keywords
+  const strong = ['自然','刻意','意識','勝手に','automatically','intentional'].some(k => ans.includes(k));
+
+  if (matched || strong) {
+    return {
+      ok: true,
+      msg: `正解！核心の違いを理解しています。<br><br>💡 ${Q5_RULES.tip}`
+    };
+  }
+  return {
+    ok: false,
+    msg: `もう少し！<br><br>✏️ ポイント：<br>
+    ・ようになる＝<em>自然に</em>変化が起きる（気づいたらできていた）<br>
+    ・ようにする＝<em>意識的に</em>行動する（自分で決めてやる）<br><br>
+    💡 ${Q5_RULES.tip}`
+  };
 }
 
 // ── Results ──
@@ -542,17 +588,49 @@ function showResults() {
 function copyObs() {
   const today = new Date().toISOString().slice(0,10);
   const oks = [S.c2a === 'B', S.c2b === 'A', S.q3ok, S.r4?.ok, S.r5?.ok];
-  let md = `---\ndate: ${today}\ngrammar: ようになる\ntag: #N3語法 #Week1 #反覆錯誤\n---\n\n## ようになる 練習記錄\n\n### 結果\n`;
+  const total = oks.filter(Boolean).length;
+  const pct = Math.round(total / 5 * 100);
   const labels = ['問題2-1 情境選擇', '問題2-2 情境選擇', '問題3 主動填空', '問題4 情境造句', '問題5 理解追問'];
-  oks.forEach((ok, i) => { md += `- ${ok ? '○' : '✗'} ${labels[i]}\n`; });
-  md += `\n### 混淆重點\n- ようになる → 自然的能力/習慣變化\n- ようにする → 自己刻意去做\n\n### 要記住的例句\n- 練習したら、漢字が書けるようになった。\n- 日本に来て、一人で電車に乗れるようになりました。\n`;
-  if (S.r4 && !S.r4.ok) md += `\n### 造句錯誤記錄\n私の答え：${S.q4v}\n`;
-  navigator.clipboard.writeText(md).then(() => {
-    const btn = document.getElementById('obs-btn');
-    btn.classList.add('saved');
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 已複製！貼入 Obsidian`;
-    setTimeout(() => { btn.classList.remove('saved'); btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> 複製錯題筆記 → 存入 Obsidian`; }, 3000);
-  });
+
+  let md = `---\ndate: ${today}\ngrammar: ようになる\nweek: 1\nday: 1\nscore: ${total}/5\naccuracy: ${pct}%\ntag: #N3語法 #Week1\n---\n\n# ${today} · Day 1 · 〜ようになる\n\n## 練習結果\n\n`;
+  md += `| 題目 | 結果 |\n|------|------|\n`;
+  labels.forEach((l, i) => { md += `| ${l} | ${oks[i] ? '○ 正確' : '✗ 錯誤'} |\n`; });
+
+  md += `\n## 錯題分析\n`;
+  if (!oks[0]) md += `\n### 問題2-1\n- 正解：ようにしました\n- 理由：情境含「意識的に」→ 刻意行為 → ようにする\n`;
+  if (!oks[1]) md += `\n### 問題2-2\n- 正解：ようになりました\n- 理由：「自然に」能力提升 → 自然變化 → ようになる\n`;
+  if (!oks[2]) md += `\n### 問題3\n- 正解：聞き取れるようになりました\n- 理由：動詞可能形 ＋ ようになる ＋ 過去式\n`;
+  if (!oks[3] && S.q4v) md += `\n### 問題4 造句\n- 我的答案：${S.q4v}\n- 正例：一人で電車に乗れるようになりました。\n`;
+  if (!oks[4] && S.q5v) md += `\n### 問題5 理解追問\n- 我的答案：${S.q5v}\n- 正解：ようになる＝自然変化、ようにする＝意識的行動\n`;
+
+  md += `\n## 今日語法重點\n\n\`\`\`\nようになる → 自然の変化（気づいたらできていた）\nようにする → 意識的な行動（自分で決めてやる）\n\`\`\`\n\n## 要記住的例句\n\n- 練習したら、漢字が書けるようになった。\n- 子どもの頃は魚が嫌いだったが、今は食べられるようになった。\n- 一人で電車に乗れるようになりました。\n\n## 次回複習タイミング\n\n- 明日：ようになる の復習問題\n- 週日：錯題集中複盤\n`;
+
+  // Append vocab if any words were added today
+  if (S.vocab && S.vocab.length > 0) {
+    md += `\n---\n\n## 今日單字本（${S.vocab.length} 個）\n\n| 單字 | 讀音 | 意思 | 來源例句 |\n|------|------|------|----------|\n`;
+    S.vocab.forEach(v => {
+      const word = v.m.split('・')[0] || v.m;
+      const meaning = v.m.split('・')[1] || '';
+      md += `| ${word} | ${v.r} | ${meaning} | ${v.ex} |\n`;
+    });
+  }
+
+  // Download as .md file
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${today}-Day1-ようになる.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  const btn = document.getElementById('obs-btn');
+  btn.classList.add('saved');
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 已下載！拖入 Obsidian 資料夾`;
+  setTimeout(() => {
+    btn.classList.remove('saved');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 下載今日學習紀錄 (.md)`;
+  }, 3000);
 }
 
 // ── Ready check ──
