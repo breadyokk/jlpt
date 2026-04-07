@@ -3,736 +3,1168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>日語練習 · Day 1</title>
+<title>日語練習</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #F5F2EB; --bg2: #EDEAE0; --surface: #FDFCF8;
-  --ink: #1C1A16; --ink2: #6B6456; --ink3: #A89F92;
-  --red: #8B1A1A; --red-light: #F7EDED;
-  --green: #2D5233; --green-light: #EBF2EC;
-  --amber: #7A5C1E; --amber-light: #F7F1E3;
-  --border: #DDD8CE; --r: 10px;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding-bottom: 80px; }
-.nav-link { font-size: 12px; color: var(--ink2); text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); transition: all .15s; }
-.nav-link:hover { background: var(--bg2); }
-.day-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--ink2); }
-.day-nav a { color: var(--ink2); text-decoration: none; display: flex; align-items: center; gap: 4px; }
-.day-nav a:hover { color: var(--ink); }
-.day-nav .current { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); }
-
-
-
-/* ── Header ── */
-.header {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.logo { font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 400; letter-spacing: 2px; }
-.header-meta { display: flex; align-items: center; gap: 8px; }
-.chip { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--ink2); background: var(--bg); }
-.chip-red { background: var(--red-light); color: var(--red); border-color: transparent; }
-
-/* ── Progress ── */
-.prog-wrap { background: var(--border); height: 3px; position: sticky; top: 49px; z-index: 99; }
-.prog-fill { height: 3px; background: var(--ink); transition: width .5s ease; }
-
-/* ── Layout ── */
-.main { max-width: 660px; margin: 0 auto; padding: 36px 20px; }
-
-/* ── Part Header ── */
-.part-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.part-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); width: 22px; text-align: right; }
-.part-title { font-size: 11px; font-weight: 500; color: var(--ink2); letter-spacing: 1.5px; text-transform: uppercase; }
-.part-line { flex: 1; height: 1px; background: var(--border); }
-.part-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); }
-
-/* ── Card ── */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 14px; }
-
-/* ── Grammar ── */
-.grammar-why { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
-.why-tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--amber-light); color: var(--amber); font-weight: 500; }
-.grammar-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; letter-spacing: 3px; margin-bottom: 4px; }
-.grammar-sub { font-size: 13px; color: var(--ink2); margin-bottom: 20px; line-height: 1.7; }
-.divider { height: 1px; background: var(--border); margin: 20px 0; }
-.grammar-pattern { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--bg2); border-radius: 6px; padding: 12px 16px; margin-bottom: 18px; line-height: 2; color: var(--ink2); }
-.grammar-pattern strong { color: var(--ink); }
-
-.ex-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
-.ex-item { border-left: 2px solid var(--border); padding-left: 14px; }
-.ex-jp { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 2; margin-bottom: 2px; }
-.ex-jp em { font-style: normal; color: var(--red); font-weight: 500; }
-.ex-tr { font-size: 12px; color: var(--ink3); line-height: 1.6; }
-
-.scene-label { font-size: 11px; color: var(--ink3); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
-.scene-text { font-family: 'Noto Serif JP', serif; font-size: 14px; line-height: 2.4; background: var(--bg); border-radius: 6px; padding: 16px 18px; margin-bottom: 10px; }
-.scene-text em { font-style: normal; color: var(--red); font-weight: 500; }
-.scene-q { font-size: 13px; color: var(--ink2); margin-bottom: 18px; }
-
-.conf-label { font-size: 11px; color: var(--red); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
-.conf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.conf-table th { text-align: left; padding: 8px 12px; background: var(--bg2); color: var(--ink2); font-weight: 500; font-size: 11px; }
-.conf-table td { padding: 10px 12px; border-top: 1px solid var(--border); line-height: 1.7; }
-.conf-table tr:last-child td { border-bottom: 1px solid var(--border); }
-.conf-table td:first-child { font-family: 'Noto Serif JP', serif; white-space: nowrap; }
-
-/* ── Kanji Reveal ── */
-.k { position: relative; cursor: pointer; border-bottom: 1px dashed var(--ink3); transition: border-color .15s; display: inline; }
-.k:hover { border-bottom-color: var(--red); }
-.k-popup { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; font-size: 12px; white-space: nowrap; z-index: 200; font-family: 'Noto Sans JP', sans-serif; line-height: 1.8; box-shadow: 0 4px 16px rgba(0,0,0,.2); pointer-events: all; }
-.k-popup::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
-.k.open .k-popup { display: block; }
-.k-popup .k-reading { font-size: 10px; color: #aaa; }
-.k-popup .k-meaning { font-size: 13px; font-weight: 500; }
-.add-vocab { pointer-events: all; display: inline-block; margin-top: 6px; font-size: 10px; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,.15); cursor: pointer; border: 1px solid rgba(255,255,255,.3); transition: background .15s; }
-.add-vocab:hover { background: rgba(255,255,255,.3); }
-.add-vocab.saved { background: #2D5233; border-color: #2D5233; }
-
-.vocab-bar { display: none; position: fixed; bottom: 20px; right: 20px; background: var(--ink); color: #fff; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-family: 'Noto Sans JP', sans-serif; z-index: 300; box-shadow: 0 4px 16px rgba(0,0,0,.2); align-items: center; gap: 10px; }
-.vocab-bar.on { display: flex; }
-.vocab-count { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: #fff; }
-.vocab-dl { font-size: 11px; color: rgba(255,255,255,.6); cursor: pointer; text-decoration: underline; }
-.vocab-dl:hover { color: #fff; }
-.q-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-bottom: 10px; }
-.q-context { font-size: 12px; color: var(--ink2); background: var(--amber-light); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; line-height: 1.8; border-left: 2px solid var(--amber); }
-.q-text { font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 2.4; margin-bottom: 16px; }
-.blank { display: inline-block; min-width: 90px; border-bottom: 2px solid var(--ink); margin: 0 3px; vertical-align: bottom; height: 26px; }
-
-.choices { display: flex; flex-direction: column; gap: 8px; }
-.choice { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; cursor: pointer; transition: all .15s; background: var(--surface); font-family: 'Noto Serif JP', serif; font-size: 14px; color: var(--ink); text-align: left; line-height: 1.7; }
-.choice:hover:not(:disabled) { border-color: var(--ink2); background: var(--bg); }
-.choice.selected { border-color: var(--ink); background: var(--ink); color: #fff; }
-.choice.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
-.choice.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); }
-.choice-key { font-family: 'DM Mono', monospace; font-size: 11px; opacity: .5; flex-shrink: 0; margin-top: 3px; }
-
-.fill-input { width: 100%; font-family: 'Noto Serif JP', serif; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; outline: none; transition: border-color .15s; line-height: 1.8; }
-.fill-input:focus { border-color: var(--ink); background: var(--surface); }
-.fill-input:disabled { opacity: .7; }
-.fill-hint { font-size: 12px; color: var(--ink3); margin-top: 8px; }
-
-.area-input { width: 100%; font-family: 'Noto Serif JP', serif; font-size: 15px; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; outline: none; resize: vertical; min-height: 100px; transition: border-color .15s; line-height: 2; }
-.area-input:focus { border-color: var(--ink); background: var(--surface); }
-.area-input:disabled { opacity: .7; }
-
-.situation-box { background: var(--bg2); border-radius: 8px; padding: 16px 18px; font-size: 14px; color: var(--ink2); line-height: 1.9; margin-bottom: 14px; border-left: 2px solid var(--ink3); }
-
-/* ── Buttons ── */
-.btn-row { display: flex; justify-content: flex-end; margin-top: 16px; gap: 10px; }
-.btn { font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 10px 22px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; background: var(--surface); color: var(--ink); }
-.btn:hover { background: var(--bg2); }
-.btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
-.btn-primary:hover { opacity: .85; }
-.btn-primary:active { transform: scale(.98); }
-.btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
-
-/* ── Loading & Feedback ── */
-.loading { display: none; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--ink2); }
-.loading.on { display: flex; }
-.dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--ink3); animation: blink 1.2s ease-in-out infinite; display: inline-block; margin-right: 3px; }
-.dots span:nth-child(2) { animation-delay: .2s; }
-.dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
-
-.feedback { display: none; margin-top: 14px; border-radius: 8px; padding: 16px 18px; font-size: 13px; line-height: 1.9; border-left: 3px solid; animation: fadeIn .3s ease; }
-.feedback.on { display: block; }
-.feedback.correct { background: var(--green-light); border-color: var(--green); }
-.feedback.wrong { background: var(--red-light); border-color: var(--red); }
-.feedback-label { font-weight: 500; font-size: 11px; letter-spacing: .5px; margin-bottom: 4px; }
-.feedback.correct .feedback-label { color: var(--green); }
-.feedback.wrong .feedback-label { color: var(--red); }
-.feedback-body { color: var(--ink); font-size: 13px; }
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-
-/* ── Results ── */
-.result-card { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; }
-.result-card.on { display: block; animation: fadeIn .4s ease; }
-.result-header { padding: 28px 28px 20px; border-bottom: 1px solid var(--border); }
-.score-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 14px; }
-.score-big { font-family: 'Noto Serif JP', serif; font-size: 56px; font-weight: 300; line-height: 1; }
-.score-of { font-size: 22px; color: var(--ink3); }
-.score-tag { font-size: 14px; color: var(--ink2); margin-left: 10px; }
-.err-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink3); margin-bottom: 6px; }
-.err-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.err-fill { height: 100%; border-radius: 3px; transition: width .7s ease; }
-.result-body { padding: 0 28px 24px; }
-.result-row { padding: 16px 0; border-bottom: 1px solid var(--border); }
-.result-row:last-child { border-bottom: none; }
-.result-q-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); margin-bottom: 6px; }
-.verdict { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 8px; }
-.v-ok { background: var(--green-light); color: var(--green); }
-.v-ng { background: var(--red-light); color: var(--red); }
-.result-analysis { font-size: 13px; color: var(--ink2); line-height: 1.9; background: var(--bg); border-radius: 6px; padding: 12px 14px; margin-top: 6px; }
-.result-analysis .ja { font-family: 'Noto Serif JP', serif; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
-.diff-hint { margin-top: 16px; font-size: 13px; padding: 12px 14px; border-radius: 8px; }
-.diff-hint.up { background: var(--green-light); color: var(--green); }
-.diff-hint.down { background: var(--amber-light); color: var(--amber); }
-
-.obs-btn { display: flex; align-items: center; gap: 8px; font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--ink2); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: all .15s; margin-top: 16px; }
-.obs-btn:hover { border-color: var(--ink2); color: var(--ink); }
-.obs-btn.saved { border-color: var(--green); color: var(--green); background: var(--green-light); }
+:root{--bg:#F5F2EB;--bg2:#EDEAE0;--sf:#FDFCF8;--ink:#1C1A16;--ink2:#6B6456;--ink3:#A89F92;--red:#8B1A1A;--rl:#F7EDED;--green:#2D5233;--gl:#EBF2EC;--amb:#7A5C1E;--al:#F7F1E3;--brd:#DDD8CE;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px}
+.hdr{background:var(--sf);border-bottom:1px solid var(--brd);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:2px}
+.hdr-r{display:flex;align-items:center;gap:7px}
+.chip{font-family:'DM Mono',monospace;font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--brd);color:var(--ink2);background:var(--bg)}
+.chip-red{background:var(--rl);color:var(--red);border-color:transparent}
+.nav-a{font-size:12px;color:var(--ink2);text-decoration:none;padding:5px 10px;border:1px solid var(--brd);border-radius:8px;background:var(--sf)}
+.nav-a:hover{background:var(--bg2)}
+.prog-w{background:var(--brd);height:3px;position:sticky;top:49px;z-index:99}
+.prog-f{height:3px;background:var(--ink);transition:width .5s}
+.day-nav{display:flex;justify-content:space-between;align-items:center;padding:9px 20px;background:var(--bg2);border-bottom:1px solid var(--brd);font-size:12px}
+.day-nav a{color:var(--ink2);text-decoration:none}.day-nav a:hover{color:var(--ink)}
+.day-nav .cur{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3)}
+.main{max-width:660px;margin:0 auto;padding:32px 18px}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:18px;margin-top:28px}
+.ph:first-child{margin-top:0}
+.pn{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);width:20px;text-align:right}
+.pt{font-size:11px;font-weight:500;color:var(--ink2);letter-spacing:1.5px;text-transform:uppercase}
+.pl{flex:1;height:1px;background:var(--brd)}
+.ptm{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3)}
+.card{background:var(--sf);border:1px solid var(--brd);border-radius:var(--r);padding:26px;margin-bottom:12px}
+/* Grammar */
+.why-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.why{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--al);color:var(--amb);font-weight:500}
+.gtitle{font-family:'Noto Serif JP',serif;font-size:26px;font-weight:300;letter-spacing:3px;margin-bottom:4px}
+.gsub{font-size:13px;color:var(--ink2);margin-bottom:18px;line-height:1.7}
+.divl{height:1px;background:var(--brd);margin:18px 0}
+.gpat{font-family:'DM Mono',monospace;font-size:12px;background:var(--bg2);border-radius:6px;padding:11px 15px;margin-bottom:16px;line-height:2;color:var(--ink2)}
+.gpat strong{color:var(--ink)}
+.exlist{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
+.exitem{border-left:2px solid var(--brd);padding-left:12px}
+.exjp{font-family:'Noto Serif JP',serif;font-size:15px;line-height:2;margin-bottom:2px}
+.exjp em{font-style:normal;color:var(--red);font-weight:500}
+.extr{font-size:12px;color:var(--ink3)}
+.sc-lbl{font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.sc-txt{font-family:'Noto Serif JP',serif;font-size:14px;line-height:2.3;background:var(--bg);border-radius:6px;padding:14px 16px;margin-bottom:8px}
+.sc-txt em{font-style:normal;color:var(--red);font-weight:500}
+.conf-lbl{font-size:11px;color:var(--red);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.ctable{width:100%;border-collapse:collapse;font-size:13px}
+.ctable th{text-align:left;padding:7px 11px;background:var(--bg2);color:var(--ink2);font-size:11px;font-weight:500}
+.ctable td{padding:9px 11px;border-top:1px solid var(--brd);line-height:1.7}
+.ctable tr:last-child td{border-bottom:1px solid var(--brd)}
+.ctable td:first-child{font-family:'Noto Serif JP',serif}
+/* Kanji */
+.k{position:relative;cursor:pointer;border-bottom:1px dashed var(--ink3);display:inline}
+.k:hover{border-bottom-color:var(--red)}
+.kp{display:none;position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:9px 13px;font-size:12px;white-space:nowrap;z-index:200;line-height:1.8;box-shadow:0 4px 14px rgba(0,0,0,.2);pointer-events:all}
+.kp::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--ink)}
+.k.open .kp{display:block}
+.kr{font-size:10px;color:#aaa}
+.km{font-size:13px;font-weight:500}
+.kbtn{display:inline-block;margin-top:5px;font-size:10px;padding:2px 7px;border-radius:10px;background:rgba(255,255,255,.15);cursor:pointer;border:1px solid rgba(255,255,255,.3);transition:background .15s}
+.kbtn:hover{background:rgba(255,255,255,.3)}
+.kbtn.saved{background:#2D5233;border-color:#2D5233}
+/* Questions */
+.qnum{font-family:'DM Mono',monospace;font-size:11px;color:var(--ink3);margin-bottom:9px}
+.qctx{font-size:12px;color:var(--ink2);background:var(--al);border-radius:6px;padding:9px 13px;margin-bottom:12px;line-height:1.8;border-left:2px solid var(--amb)}
+.qtext{font-family:'Noto Serif JP',serif;font-size:16px;line-height:2.3;margin-bottom:14px}
+.choices{display:flex;flex-direction:column;gap:7px}
+.choice{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--brd);border-radius:8px;padding:11px 15px;cursor:pointer;transition:all .15s;background:var(--sf);font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink);text-align:left;line-height:1.7}
+.choice:hover{border-color:var(--ink2);background:var(--bg)}
+.choice.correct{border-color:var(--green);background:var(--gl);color:var(--green)}
+.choice.wrong{border-color:var(--red);background:var(--rl);color:var(--red)}
+.ckey{font-family:'DM Mono',monospace;font-size:11px;opacity:.5;flex-shrink:0;margin-top:3px}
+.fill-in{width:100%;font-family:'Noto Serif JP',serif;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:13px 15px;outline:none;transition:border-color .15s;line-height:1.8}
+.fill-in:focus{border-color:var(--ink);background:var(--sf)}
+.fill-in:disabled{opacity:.7}
+.hint{font-size:12px;color:var(--ink3);margin-top:7px}
+.area-in{width:100%;font-family:'Noto Serif JP',serif;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:13px 15px;outline:none;resize:vertical;min-height:90px;transition:border-color .15s;line-height:2}
+.area-in:focus{border-color:var(--ink);background:var(--sf)}
+.area-in:disabled{opacity:.7}
+.sitbox{background:var(--bg2);border-radius:8px;padding:14px 16px;font-size:14px;color:var(--ink2);line-height:1.9;margin-bottom:12px;border-left:2px solid var(--ink3);white-space:pre-line}
+.multi-blank{margin-bottom:14px}
+.multi-blank .qtext{font-size:15px;margin-bottom:8px}
+.intro-note{font-size:13px;color:var(--ink2);margin-bottom:14px;font-style:italic}
+/* Vocab */
+.vtable{width:100%;border-collapse:collapse;font-size:13px}
+.vtable th{text-align:left;padding:7px 11px;background:var(--bg2);color:var(--ink2);font-size:11px;font-weight:500;border-bottom:1px solid var(--brd)}
+.vtable td{padding:9px 11px;border-bottom:1px solid var(--brd);line-height:1.6;vertical-align:top}
+.vtable tr:hover td{background:var(--bg)}
+.vtable td:first-child{font-family:'Noto Serif JP',serif;font-size:15px;font-weight:500}
+.vtable td:nth-child(2){font-family:'DM Mono',monospace;font-size:12px;color:var(--ink3)}
+/* Reading */
+.read-txt{font-family:'Noto Serif JP',serif;font-size:15px;line-height:2.6;background:var(--bg);border-radius:8px;padding:18px 20px;margin-bottom:18px;white-space:pre-line}
+.read-txt em{font-style:normal;color:var(--red);font-weight:500}
+/* Review */
+.review-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--brd)}
+.review-item:last-child{border-bottom:none}
+.review-jp{font-family:'Noto Serif JP',serif;font-size:15px;flex:1}
+.review-note{font-size:12px;color:var(--green);white-space:nowrap}
+/* Buttons */
+.btn-row{display:flex;justify-content:flex-end;margin-top:14px;gap:9px}
+.btn{font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:500;padding:9px 20px;border-radius:8px;border:1px solid var(--brd);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;background:var(--sf);color:var(--ink)}
+.btn:hover{background:var(--bg2)}
+.btn-p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-p:hover{opacity:.85}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+/* Feedback */
+.fb{display:none;margin-top:12px;border-radius:8px;padding:14px 16px;font-size:13px;line-height:1.9;border-left:3px solid;animation:fi .25s ease}
+.fb.on{display:block}
+.fb.ok{background:var(--gl);border-color:var(--green)}
+.fb.ng{background:var(--rl);border-color:var(--red)}
+.fb-lbl{font-size:11px;font-weight:500;margin-bottom:3px;letter-spacing:.5px}
+.fb.ok .fb-lbl{color:var(--green)}.fb.ng .fb-lbl{color:var(--red)}
+.fb-body{color:var(--ink)}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* Loading dots */
+.ld{display:none;align-items:center;gap:7px;margin-top:10px;font-size:13px;color:var(--ink2)}
+.ld.on{display:flex}
+.dots span{width:4px;height:4px;border-radius:50%;background:var(--ink3);animation:bl 1.2s ease-in-out infinite;display:inline-block;margin-right:3px}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
+/* Results */
+.res-card{display:none;background:var(--sf);border:1px solid var(--brd);border-radius:var(--r);overflow:hidden;margin-top:20px}
+.res-card.on{display:block;animation:fi .35s ease}
+.res-hdr{padding:26px;border-bottom:1px solid var(--brd)}
+.srow{display:flex;align-items:baseline;gap:5px;margin-bottom:12px}
+.sbig{font-family:'Noto Serif JP',serif;font-size:50px;font-weight:300;line-height:1}
+.sof{font-size:20px;color:var(--ink3)}.stag{font-size:14px;color:var(--ink2);margin-left:9px}
+.ebl{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:5px}
+.ebar{height:6px;background:var(--brd);border-radius:3px;overflow:hidden}
+.efil{height:100%;border-radius:3px;transition:width .7s}
+.res-body{padding:0 26px 24px}
+.rrow{padding:14px 0;border-bottom:1px solid var(--brd)}
+.rrow:last-child{border-bottom:none}
+.rlbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:5px}
+.vrd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.vok{background:var(--gl);color:var(--green)}.vng{background:var(--rl);color:var(--red)}
+.ranalysis{font-size:13px;color:var(--ink2);line-height:1.9;background:var(--bg);border-radius:6px;padding:11px 13px;margin-top:5px}
+.dhint{margin-top:14px;font-size:13px;padding:11px 13px;border-radius:8px}
+.dhint.up{background:var(--gl);color:var(--green)}.dhint.down{background:var(--al);color:var(--amb)}
+/* Download / obs */
+.dl-btn{display:none;align-items:center;gap:7px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink2);background:var(--sf);border:1px solid var(--brd);border-radius:8px;padding:9px 15px;cursor:pointer;transition:all .15s;margin-top:14px}
+.dl-btn:hover{border-color:var(--ink2);color:var(--ink)}
+.dl-btn.saved{border-color:var(--green);color:var(--green);background:var(--gl)}
+/* Vocab bar */
+.vbar{display:none;position:fixed;bottom:18px;right:18px;background:var(--ink);color:#fff;border-radius:10px;padding:9px 15px;font-size:13px;z-index:300;box-shadow:0 4px 14px rgba(0,0,0,.2);align-items:center;gap:9px}
+.vbar.on{display:flex}
+.vcnt{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
+.vdl{font-size:11px;color:rgba(255,255,255,.6);cursor:pointer;text-decoration:underline}
+.vdl:hover{color:#fff}
+/* Progress link */
+.prog-link{font-size:12px;color:var(--ink2);text-align:center;margin-top:16px}
+.prog-link a{color:var(--ink2);text-decoration:underline}
+/* Day 7 stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat-c{background:var(--sf);border:1px solid var(--brd);border-radius:8px;padding:14px}
+.stat-lbl{font-size:11px;color:var(--ink3);margin-bottom:5px;font-family:'DM Mono',monospace;text-transform:uppercase}
+.stat-v{font-family:'Noto Serif JP',serif;font-size:24px;font-weight:300}
+.stat-sub{font-size:11px;color:var(--ink3);margin-top:3px}
+.gbr-row{padding:12px 0;border-bottom:1px solid var(--brd)}
+.gbr-row:last-child{border-bottom:none}
+.gbr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.gbr-name{font-family:'Noto Serif JP',serif;font-size:14px}
+.gbr-pct{font-size:12px;color:var(--ink2)}
+.gbr{height:5px;background:var(--brd);border-radius:3px;overflow:hidden}
+.gbrf{height:100%;border-radius:3px}
 </style>
 </head>
 <body>
 
-
-
-<!-- ── Header ── -->
-<header class="header">
+<header class="hdr">
   <span class="logo">日語練習</span>
-  <div class="header-meta">
-    <span class="chip" id="chip-week">WEEK 1 · DAY 1</span>
-    <span class="chip" id="chip-time">週一 · 30 min</span>
-    <span class="chip chip-red">N3</span>
-    <a class="nav-link" href="progress.html">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      進度
-    </a>
+  <div class="hdr-r">
+    <span class="chip" id="chip-wk">WEEK 1 · DAY 1</span>
+    <span class="chip" id="chip-tm">週一 · 30 min</span>
+    <span class="chip chip-red" id="chip-lv">N3</span>
+    <a class="nav-a" href="progress.html">進度 →</a>
   </div>
 </header>
-<div class="day-nav" id="day-nav">
+<div class="prog-w"><div class="prog-f" id="pbar" style="width:10%"></div></div>
+<div class="day-nav">
   <a id="nav-prev" href="#" style="visibility:hidden">← 上一天</a>
-  <span class="current" id="nav-current">Day 1 / 90</span>
+  <span class="cur" id="nav-cur">Day 1 / 90</span>
   <a id="nav-next" href="#">下一天 →</a>
 </div>
-<div class="prog-wrap"><div class="prog-fill" id="prog" style="width:20%"></div></div>
 
-<div class="main">
+<div class="main" id="root"></div>
 
-<!-- ══ PART 1 · 語法學習 ══ -->
-<div class="part-head">
-  <span class="part-num">01</span>
-  <span class="part-title">今日語法</span>
-  <div class="part-line"></div>
-  <span class="part-time">10 min</span>
-</div>
-<div class="card">
-  <div class="grammar-why">
-    <span class="why-tag">N3 必考 ★★★★★</span>
-    <span class="why-tag">日常高頻使用</span>
-    <span class="why-tag">易混淆：ようにする</span>
-  </div>
-  <div class="grammar-title">〜ようになる</div>
-  <div class="grammar-sub">表示能力或習慣的<strong>自然變化</strong>。「變得能夠…」「開始…」<br>N3/N2 考試幾乎每屆必考，讀解文章也大量出現。</div>
-  <div class="grammar-pattern">
-    <strong>動詞辭書形</strong> ＋ ようになる　→　能力出現（變得能做）<br>
-    <strong>動詞ない形</strong> ＋ ようになる　→　習慣停止（變得不做）
-  </div>
-  <div class="divider"></div>
-  <div class="scene-label">例句</div>
-  <div class="ex-list">
-    <div class="ex-item">
-      <div class="ex-jp"><span class="k" onclick="toggleK(this)" data-r="れんしゅう" data-m="練習・練習">練習</span>したら、<span class="k" onclick="toggleK(this)" data-r="かんじ" data-m="漢字・中文漢字">漢字</span>が書ける<em>ようになった</em>。</div>
-      <div class="ex-tr">（練習之後，變得能夠寫漢字了。）</div>
-    </div>
-    <div class="ex-item">
-      <div class="ex-jp"><span class="k" onclick="toggleK(this)" data-r="こどものころ" data-m="子どもの頃・小時候">子どもの頃</span>は<span class="k" onclick="toggleK(this)" data-r="さかな" data-m="魚・魚">魚</span>が<span class="k" onclick="toggleK(this)" data-r="きらい" data-m="嫌い・討厭">嫌い</span>だったが、今は食べられる<em>ようになった</em>。</div>
-      <div class="ex-tr">（小時候討厭魚，現在變得能吃了。）</div>
-    </div>
-    <div class="ex-item">
-      <div class="ex-jp">毎日ニュースを聞いていたら、だんだん<span class="k" onclick="toggleK(this)" data-r="ないよう" data-m="内容・內容">内容</span>が分かる<em>ようになってきた</em>。</div>
-      <div class="ex-tr">（每天聽新聞，漸漸能理解內容了。）</div>
-    </div>
-  </div>
-  <div class="scene-label">使用場景短文</div>
-  <div class="scene-text">田中さんは去年まで、英語が<span class="k" onclick="toggleK(this)" data-r="ぜんぜん" data-m="全然・完全不">全然</span>話せませんでした。でも、毎日30分<span class="k" onclick="toggleK(this)" data-r="れんしゅう" data-m="練習・練習">練習</span>を<span class="k" onclick="toggleK(this)" data-r="つづ" data-m="続けた・持續">続けた</span><span class="k" onclick="toggleK(this)" data-r="けっか" data-m="結果・結果">結果</span>、今では<span class="k" onclick="toggleK(this)" data-r="かんたんなかいわ" data-m="簡単な会話・簡單對話">簡単な会話</span>ができる<em>ようになりました</em>。</div>
-  <div class="scene-q">📖 下線の「ようになりました」は何の変化を表していますか？</div>
-  <div class="divider"></div>
-  <div class="conf-label">⚠ 混淆提醒</div>
-  <table class="conf-table">
-    <tr><th>語法</th><th>性質</th><th>例</th><th>中文</th></tr>
-    <tr><td>ようになる</td><td>自然發生的變化</td><td>食べられるようになった</td><td>變得能夠…</td></tr>
-    <tr><td>ようにする</td><td>自己刻意去做</td><td>野菜を食べるようにした</td><td>讓自己去做…</td></tr>
-  </table>
-</div>
-
-<!-- ══ PART 2 · 情境選擇 ══ -->
-<div class="part-head" style="margin-top:32px">
-  <span class="part-num">02</span>
-  <span class="part-title">情境選擇</span>
-  <div class="part-line"></div>
-  <span class="part-time">5 min</span>
-</div>
-
-<div class="card">
-  <div class="q-num">問題 2-1</div>
-  <div class="q-context">情境：Aさんは<span class="k" onclick="toggleK(this)" data-r="けんこう" data-m="健康・健康">健康</span>のために、<span class="k" onclick="toggleK(this)" data-r="いしきてき" data-m="意識的・有意識地">意識的</span>に毎朝ジョギングをすることにした。（A 為了健康，有意識地決定每天早上慢跑。）</div>
-  <div class="q-text">Aさんは毎朝ジョギングする<span class="blank"></span>。</div>
-  <div class="choices" id="c2a">
-    <button class="choice" onclick="pick('c2a',0,'B')"><span class="choice-key">A</span>ようになりました（自然養成的習慣）</button>
-    <button class="choice" onclick="pick('c2a',1,'B')"><span class="choice-key">B</span>ようにしました（刻意決定去做）</button>
-    <button class="choice" onclick="pick('c2a',2,'B')"><span class="choice-key">C</span>ことになりました（因外部決定）</button>
-  </div>
-  <div class="feedback" id="fb2a"></div>
-</div>
-
-<div class="card">
-  <div class="q-num">問題 2-2</div>
-  <div class="q-context">情境：Bさんは<span class="k" onclick="toggleK(this)" data-r="さんねんかん" data-m="三年間・三年期間">三年間</span><span class="k" onclick="toggleK(this)" data-r="にほんご" data-m="日本語・日語">日本語</span>を<span class="k" onclick="toggleK(this)" data-r="べんきょう" data-m="勉強・學習">勉強</span>して、今では<span class="k" onclick="toggleK(this)" data-r="しぜん" data-m="自然・自然地">自然</span>にニュースが<span class="k" onclick="toggleK(this)" data-r="りかい" data-m="理解・理解">理解</span>できる。（B 讀了三年日語，自然地能理解新聞了。）</div>
-  <div class="q-text">Bさんはニュースの内容が理解できる<span class="blank"></span>。</div>
-  <div class="choices" id="c2b">
-    <button class="choice" onclick="pick('c2b',0,'A')"><span class="choice-key">A</span>ようになりました（自然的能力變化）</button>
-    <button class="choice" onclick="pick('c2b',1,'A')"><span class="choice-key">B</span>ようにしました（刻意努力）</button>
-    <button class="choice" onclick="pick('c2b',2,'A')"><span class="choice-key">C</span>はずになりました（不正確的語法）</button>
-  </div>
-  <div class="feedback" id="fb2b"></div>
-</div>
-
-<!-- ══ PART 3 · 主動填空 ══ -->
-<div class="part-head" style="margin-top:32px">
-  <span class="part-num">03</span>
-  <span class="part-title">主動填空（無提示）</span>
-  <div class="part-line"></div>
-  <span class="part-time">5 min</span>
-</div>
-<div class="card">
-  <div class="q-num">問題 3</div>
-  <div class="q-text">日本語を一年間<span class="k" onclick="toggleK(this)" data-r="べんきょう" data-m="勉強・學習">勉強</span>して、ニュースが<span class="k" onclick="toggleK(this)" data-r="きとれる" data-m="聞き取れる・能夠聽懂">聞き取れる</span>＿＿＿＿＿＿＿。</div>
-  <input class="fill-input" id="q3" type="text" placeholder="請直接填入正確形式…" oninput="checkReady()" onkeydown="if(event.key==='Enter')confirmQ3()">
-  <div class="fill-hint">提示：過去式。動詞可能形 ＋ ＿＿＿ た</div>
-  <div class="btn-row" style="margin-top:12px">
-    <button class="btn btn-primary" id="q3-confirm" onclick="confirmQ3()" disabled>
-      確認答案
-      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-  <div class="feedback" id="fb3"></div>
-</div>
-
-<!-- ══ PART 4 · 情境造句 ══ -->
-<div class="part-head" style="margin-top:32px">
-  <span class="part-num">04</span>
-  <span class="part-title">情境造句</span>
-  <div class="part-line"></div>
-  <span class="part-time">5 min</span>
-</div>
-<div class="card">
-  <div class="q-num">問題 4</div>
-  <div class="situation-box">你以前不敢一個人搭地鐵，來日本半年後，現在已經完全沒問題了。<br>請用「ようになる」描述這個變化（1–2 句）。</div>
-  <textarea class="area-input" id="q4" placeholder="一人で電車に乗れる…" oninput="checkReady()"></textarea>
-  <div class="loading" id="ld4"><div class="dots"><span></span><span></span><span></span></div>Claude 批改中…</div>
-  <div class="feedback" id="fb4"></div>
-</div>
-
-<!-- ══ PART 5 · 理解追問 ══ -->
-<div class="part-head" style="margin-top:32px">
-  <span class="part-num">05</span>
-  <span class="part-title">理解追問</span>
-  <div class="part-line"></div>
-  <span class="part-time">5 min</span>
-</div>
-<div class="card">
-  <div class="q-num">問題 5</div>
-  <div class="situation-box">「ようになる」と「ようにする」の<span class="k" onclick="toggleK(this)" data-r="ちがい" data-m="違い・差異">違い</span>を、<strong>自分の<span class="k" onclick="toggleK(this)" data-r="ことば" data-m="言葉・語言/話語">言葉</span>で一言</strong>説明してください。<br><span style="font-size:12px;color:var(--ink3)">（中文或日文都可以，說出關鍵就好）</span></div>
-  <textarea class="area-input" id="q5" placeholder="ようになる は自然の変化で、ようにする は…" oninput="checkReady()"></textarea>
-  <div class="loading" id="ld5"><div class="dots"><span></span><span></span><span></span></div>Claude 批改中…</div>
-  <div class="feedback" id="fb5"></div>
-</div>
-
-<div class="btn-row">
-  <button class="btn btn-primary" id="sub-btn" onclick="submitAll()" disabled>
-    提交全部答案
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
-</div>
-
-<!-- ══ RESULTS ══ -->
-<div class="result-card" id="result-card">
-  <div class="result-header">
-    <div class="score-row">
-      <span class="score-big" id="score-big">–</span>
-      <span class="score-of">/ 5</span>
-      <span class="score-tag" id="score-tag"></span>
-    </div>
-    <div class="err-bar-label"><span>正確率</span><span id="err-pct">–</span></div>
-    <div class="err-bar"><div class="err-fill" id="err-fill" style="width:0%"></div></div>
-  </div>
-  <div class="result-body" id="result-body"></div>
-</div>
-<button class="obs-btn" id="obs-btn" style="display:none" onclick="copyObs()">
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-  下載今日學習紀錄 (.md)
-</button>
-<!-- Vocab bar -->
-<div class="vocab-bar" id="vocab-bar">
-  <span class="vocab-count" id="vocab-count">0</span>
-  <span style="color:rgba(255,255,255,.7);font-size:13px;">個單字已加入</span>
-  <span class="vocab-dl" onclick="downloadVocab()">單獨下載單字本</span>
-</div>
-
-<div style="height:60px"></div>
+<div class="vbar" id="vbar">
+  <span class="vcnt" id="vcnt">0</span>
+  <span style="color:rgba(255,255,255,.7)">個單字已加入</span>
+  <span class="vdl" onclick="dlVocab()">下載單字本</span>
 </div>
 
 <script>
-// ── Day navigation ──
-const DAY_META = {
-  1: { week:1, weekday:'週一', topic:'〜ようになる', time:30 },
-  2: { week:1, weekday:'週二', topic:'ようになる 複習＋單字', time:30 },
-  3: { week:1, weekday:'週三', topic:'〜ために＋讀解', time:60 },
-  4: { week:1, weekday:'週四', topic:'〜てしまう', time:60 },
-  5: { week:1, weekday:'週五', topic:'〜はずだ＋對比', time:60 },
-  6: { week:1, weekday:'週六', topic:'綜合練習', time:120 },
-  7: { week:1, weekday:'週日', topic:'Week 1 複盤', time:120 },
+// ═══════════════════════════════════════════════════
+// KANJI DICTIONARY
+// ═══════════════════════════════════════════════════
+const KD = {
+  '練習':['れんしゅう','練習・練習'],
+  '漢字':['かんじ','漢字・中文漢字'],
+  '内容':['ないよう','内容・內容'],
+  '全然':['ぜんぜん','全然・完全不'],
+  '続けた':['つづけた','続ける・持續'],
+  '続け':['つづけ','続ける・持續'],
+  '結果':['けっか','結果・結果'],
+  '簡単':['かんたん','簡単・簡單'],
+  '会話':['かいわ','会話・對話'],
+  '勉強':['べんきょう','勉強・學習'],
+  '聞き取れる':['きとれる','聞き取れる・能夠聽懂'],
+  '健康':['けんこう','健康・健康'],
+  '意識的':['いしきてき','意識的・有意識地'],
+  '日本語':['にほんご','日本語・日語'],
+  '三年間':['さんねんかん','三年間・三年期間'],
+  '自然':['しぜん','自然・自然地'],
+  '理解':['りかい','理解・理解'],
+  '合格':['ごうかく','合格・通過考試'],
+  '試験':['しけん','試験・考試'],
+  '目標':['もくひょう','目標・目標'],
+  '約束':['やくそく','約束・約定'],
+  '友達':['ともだち','友達・朋友'],
+  '電池':['でんち','電池・電池'],
+  '宿題':['しゅくだい','宿題・作業'],
+  '大切':['たいせつ','大切・重要'],
+  '以上':['いじょう','以上・以上'],
+  '以下':['いか','以下・以下'],
+  '理由':['りゆう','理由・理由'],
+  '目的':['もくてき','目的・目的'],
+  '経験':['けいけん','経験・經驗'],
+  '単語':['たんご','単語・單字'],
+  '覚え':['おぼえ','覚える・記住'],
+  '表現':['ひょうげん','表現・表達'],
+  '変わる':['かわる','変わる・改變'],
+  '増える':['ふえる','増える・增加'],
+  '慣れる':['なれる','慣れる・習慣'],
+  '諦める':['あきらめる','諦める・放棄'],
+  '上達':['じょうたつ','上達する・進步'],
+  '確認':['かくにん','確認する・確認'],
+  '正確':['せいかく','正確・正確'],
+  '丁寧':['ていねい','丁寧・仔細'],
 };
-const currentDay = parseInt(new URLSearchParams(window.location.search).get('day') || '1');
-const meta = DAY_META[currentDay] || DAY_META[1];
 
-// Update header chips
-document.getElementById('chip-week').textContent = `WEEK ${meta.week} · DAY ${currentDay}`;
-document.getElementById('chip-time').textContent = `${meta.weekday} · ${meta.time} min`;
-
-// Update day nav
-document.getElementById('nav-current').textContent = `Day ${currentDay} / 90`;
-if (currentDay > 1) {
-  const prev = document.getElementById('nav-prev');
-  prev.href = `index.html?day=${currentDay - 1}`;
-  prev.style.visibility = 'visible';
-}
-if (currentDay < 90) {
-  document.getElementById('nav-next').href = `index.html?day=${currentDay + 1}`;
+function kify(text) {
+  let out = text;
+  for (const [k, [r, m]] of Object.entries(KD)) {
+    const re = new RegExp(k, 'g');
+    out = out.replace(re, `<span class="k" onclick="toggleK(this)" data-r="${r}" data-m="${m}">${k}</span>`);
+  }
+  return out;
 }
 
-// ── State ──
-const S = { c2a: null, c2b: null, q3ok: null, r4: null, r5: null, q4v: '', q5v: '' };
+// ═══════════════════════════════════════════════════
+// CURRICULUM DATA – Week 1 (Days 1–7)
+// ═══════════════════════════════════════════════════
+const C = {
 
-// ── Local grading rules for Q4 & Q5 ──
-const Q4_RULES = {
-  required: ['ようになり','ようになっ','ようになる'],
-  good: ['一人で','電車','乗れる','乗られる','地下鉄'],
-  corrections: {
-    noYou: '一人で電車に乗れるようになりました。',
-    noSubject: '主語（一人で）を加えるとより自然です。',
+  1: {
+    meta:{week:1,wd:'週一',topic:'〜ようになる',time:30,lv:'N3'},
+    parts:[
+      {type:'grammar',num:'01',label:'今日語法',time:10,
+        title:'〜ようになる',
+        why:['N3 必考 ★★★★★','日常高頻使用','易混淆：ようにする'],
+        sub:'表示能力或習慣的<strong>自然變化</strong>。「變得能夠…」「開始…」',
+        pat:['<strong>動詞辭書形</strong> ＋ ようになる　→　能力出現（變得能做）','<strong>動詞ない形</strong> ＋ ようになる　→　習慣停止（變得不做）'],
+        ex:[
+          {jp:'練習したら、漢字が書ける<em>ようになった</em>。',tr:'練習後，變得能夠寫漢字了。'},
+          {jp:'子どもの頃は魚が嫌いだったが、今は食べられる<em>ようになった</em>。',tr:'小時候討厭魚，現在變得能吃了。'},
+          {jp:'毎日ニュースを聞いていたら、だんだん内容が分かる<em>ようになってきた</em>。',tr:'每天聽新聞，漸漸能理解內容了。'}
+        ],
+        scene:'田中さんは去年まで、英語が全然話せませんでした。でも、毎日30分練習を続けた結果、今では簡単な会話ができる<em>ようになりました</em>。',
+        conf_cols:['語法','性質','例','中文'],
+        conf_rows:[
+          ['ようになる','自然發生的變化','食べられるようになった','變得能夠…'],
+          ['ようにする','自己刻意去做','野菜を食べるようにした','讓自己去做…']
+        ]
+      },
+      {type:'qs',num:'02',label:'情境選擇',time:5,items:[
+        {t:'choice',id:'q_1_2a',num:'問題 2-1',
+          ctx:'情境：Aさんは健康のために、意識的に毎朝ジョギングをすることにした。（A 為了健康，有意識地決定每天早上慢跑。）',
+          text:'Aさんは毎朝ジョギングする＿＿＿。',
+          opts:['ようになりました（自然養成的習慣）','ようにしました（刻意決定去做）','ことになりました（因外部決定）'],
+          ans:1,
+          ok:'正確！情境說「意識的に」→ 刻意決定的行為，所以用ようにする。',
+          ng:['ようになりました 表示自然發生的變化。但情境中是刻意決定的（意識的に）。',null,'ことになる 表示因外部因素被決定，不符合此情境。']
+        },
+        {t:'choice',id:'q_1_2b',num:'問題 2-2',
+          ctx:'情境：Bさんは三年間日本語を勉強して、今では自然にニュースが理解できる。（B 讀了三年日語，自然地能理解新聞了。）',
+          text:'Bさんはニュースの内容が理解できる＿＿＿。',
+          opts:['ようになりました（自然的能力變化）','ようにしました（刻意努力）','はずになりました（不正確的語法）'],
+          ans:0,
+          ok:'正確！三年自然練習後能力提升，是典型的ようになりました。',
+          ng:[null,'ようにしました 是刻意努力去做。但題目說「自然に」，代表自然變化。','はずになりました 不是正確的語法組合。']
+        }
+      ]},
+      {type:'qs',num:'03',label:'主動填空（無提示）',time:5,items:[
+        {t:'fill',id:'q_1_3',num:'問題 3',
+          text:'日本語を一年間勉強して、ニュースが聞き取れる＿＿＿＿＿＿＿。',
+          hint:'提示：過去式。動詞可能形 ＋ ＿＿＿ た',
+          ans:['ようになりました','ようになった'],
+          ok:'よくできました！「ようになりました」で能力変化を正しく表現できています。',
+          ng:'正解は「ようになりました」。動詞可能形 ＋ ようになる ＋ 過去式。'
+        }
+      ]},
+      {type:'qs',num:'04',label:'情境造句',time:5,items:[
+        {t:'compose',id:'q_1_4',num:'問題 4',
+          sit:'你以前不敢一個人搭地鐵，來日本半年後，現在已經完全沒問題了。\n請用「ようになる」描述這個變化（1–2 句）。',
+          ph:'一人で電車に乗れる…',
+          req:['ようになり','ようになっ','ようになる'],
+          good:['一人で','電車','乗れる'],
+          ex:'一人で電車に乗れるようになりました。',
+          gkey:'ようになる'
+        }
+      ]},
+      {type:'qs',num:'05',label:'理解追問',time:5,items:[
+        {t:'understand',id:'q_1_5',num:'問題 5',
+          prompt:'「ようになる」と「ようにする」の違いを、自分の言葉で一言説明してください。\n（中文或日文都可以，說出關鍵就好）',
+          ph:'ようになる は自然の変化で、ようにする は…',
+          pairs:[['自然','変化'],['自然','なる'],['刻意','做'],['意識','する'],['自然','變化'],['勝手','変わ']],
+          strong:['自然','刻意','意識','勝手'],
+          tip:'ようになる＝気づいたら変わっていた。ようにする＝意識して行動する。',
+          expl:'ようになる → 自然の変化<br>ようにする → 意識的な行動'
+        }
+      ]}
+    ]
+  },
+
+  2: {
+    meta:{week:1,wd:'週二',topic:'ようになる 複習＋單字',time:30,lv:'N3'},
+    parts:[
+      {type:'review',num:'01',label:'昨日語法快速複習',time:5,
+        note:'不重新教，只確認理解。有疑問 → 標記，週日複盤處理。',
+        items:[
+          {jp:'一人で料理できるようになった。',note:'→ 自然變化 ✓'},
+          {jp:'一人で料理するようにした。',note:'→ 刻意努力 ✓'}
+        ]
+      },
+      {type:'qs',num:'02',label:'情境選擇',time:5,items:[
+        {t:'choice',id:'q_2_2a',num:'問題 2-1',
+          ctx:'情境提示：「気をつけています」→ 刻意注意中',
+          text:'最近、甘いものを食べすぎない＿＿＿気をつけています。',
+          opts:['ようになって','ようにして','ことになって'],
+          ans:1,
+          ok:'正確！「気をつけています」表示刻意注意，所以用ようにして。',
+          ng:['ようになって 表示自然變化，但這裡是刻意注意。',null,'ことになって 表示外部決定。']
+        },
+        {t:'choice',id:'q_2_2b',num:'問題 2-2',
+          ctx:'三句都合法，但語意各不同。選出「表達自然養成習慣」的那句。',
+          text:'下面哪個句子表示「自然養成的習慣」？',
+          opts:['毎朝ジョギングするようになりました。','毎朝ジョギングするようにしました。','毎朝ジョギングすることになりました。'],
+          ans:0,
+          ok:'正確！ようになりました 表示自然養成的習慣。',
+          ng:[null,'ようにしました 是刻意努力去做，不是自然養成。','ことになりました 是外部決定，不是自己的習慣。']
+        }
+      ]},
+      {type:'qs',num:'03',label:'主動填空',time:5,items:[
+        {t:'fill',id:'q_2_3',num:'問題 3',
+          text:'子どもの頃は泳げなかったが、練習を続けて、今は50メートル泳げる＿＿＿＿＿＿＿。',
+          hint:'ようになる を使って、自分で時制を決めること',
+          ans:['ようになりました','ようになった','ようになります'],
+          ok:'正確！能力の変化を正しく表現できています。',
+          ng:'正解は「ようになりました」または「ようになった」。'
+        }
+      ]},
+      {type:'vocab',num:'04',label:'本週單字｜動詞組 Week 1',time:15,
+        note:'蓋住中文欄，看日文說出意思。不確定的字 → 點擊展開讀音 → 加入單字本。',
+        words:[
+          {w:'変わる',r:'かわる',pos:'自動詞',m:'改變',ex:'生活が変わった。'},
+          {w:'続ける',r:'つづける',pos:'他動詞',m:'持續',ex:'練習を続ける。'},
+          {w:'気づく',r:'きづく',pos:'自動詞',m:'察覺',ex:'間違いに気づく。'},
+          {w:'増える',r:'ふえる',pos:'自動詞',m:'增加',ex:'友達が増えた。'},
+          {w:'減る',r:'へる',pos:'自動詞',m:'減少',ex:'ミスが減った。'},
+          {w:'慣れる',r:'なれる',pos:'自動詞',m:'習慣',ex:'仕事に慣れた。'},
+          {w:'諦める',r:'あきらめる',pos:'他動詞',m:'放棄',ex:'夢を諦めない。'},
+          {w:'努力する',r:'どりょくする',pos:'自動詞',m:'努力',ex:'毎日努力する。'},
+          {w:'上達する',r:'じょうたつする',pos:'自動詞',m:'進步',ex:'日本語が上達した。'},
+          {w:'確認する',r:'かくにんする',pos:'他動詞',m:'確認',ex:'答えを確認する。'}
+        ]
+      }
+    ]
+  },
+
+  3: {
+    meta:{week:1,wd:'週三',topic:'〜ために＋讀解',time:60,lv:'N3'},
+    parts:[
+      {type:'grammar',num:'01',label:'今日語法',time:10,
+        title:'〜ために',
+        why:['N3 必考 ★★★★★','目的表達最核心語法','易混淆：ように'],
+        sub:'表示目的「為了…」。後接意志動詞時用ために，後接可能動詞時用ように。',
+        pat:['<strong>動詞辭書形</strong> ＋ ために（目的：為了做…）','<strong>名詞</strong> ＋ のために（目的/原因：為了…、因為…）'],
+        ex:[
+          {jp:'日本語を上手になる<em>ために</em>、毎日練習している。',tr:'為了日語變好，每天練習。'},
+          {jp:'健康の<em>ために</em>、野菜をたくさん食べる。',tr:'為了健康，吃很多蔬菜。'},
+          {jp:'試験に合格する<em>ために</em>、三ヶ月間勉強した。',tr:'為了通過考試，讀了三個月的書。'}
+        ],
+        scene:'山田さんは日本の大学に入る<em>ために</em>、毎日10時間勉強しています。また、奨学金をもらう<em>ために</em>、成績も上げなければなりません。夢を実現する<em>ために</em>、今は遊ぶ時間を減らしています。',
+        conf_cols:['','ために','ように'],
+        conf_rows:[
+          ['後接動詞','意志動詞（する/食べる）','可能動詞（できる/見える）'],
+          ['例','合格するために勉強する','聞こえるように大きく話す'],
+          ['中文','為了（主動目的）','以便（結果目的）']
+        ]
+      },
+      {type:'qs',num:'02',label:'情境選擇',time:5,items:[
+        {t:'choice',id:'q_3_2a',num:'問題 2-1',ctx:'',
+          text:'日本語を上手になる＿＿＿、毎日練習しています。',
+          opts:['ために','ように','のに'],
+          ans:0,
+          ok:'正確！「上手になる」是主動目標，後接意志動詞練習する → ために。',
+          ng:[null,'ように 後接可能動詞。「上手になる」是意志動詞，應用ために。','のに 表示逆接（雖然…但是…），不符合。']
+        },
+        {t:'choice',id:'q_3_2b',num:'問題 2-2',ctx:'情境：聲音太小，希望大家都能聽到。',
+          text:'下面哪句正確？',
+          opts:['聞こえるために、大きい声で話す。','聞こえるように、大きい声で話す。'],
+          ans:1,
+          ok:'正確！「聞こえる」是可能動詞，後接ように。',
+          ng:['聞こえる 是可能動詞，應搭配ように，不是ために。',null]
+        }
+      ]},
+      {type:'qs',num:'03',label:'主動填空',time:5,items:[
+        {t:'fill',id:'q_3_3a',num:'問題 3-1',
+          text:'健康＿＿＿、毎朝30分歩くようにしている。',
+          hint:'健康 は名詞 → 名詞 ＋ のために',
+          ans:['のために','のため'],
+          ok:'のために 正確！名詞の後は のために。',
+          ng:'健康 は名詞 → 健康のために。'
+        },
+        {t:'fill',id:'q_3_3b',num:'問題 3-2',
+          text:'JLPT N2に合格する＿＿＿、毎日欠かさず勉強しています。',
+          hint:'動詞辭書形の後は ために',
+          ans:['ために','ため'],
+          ok:'ために 正確！動詞辭書形の後は ために。',
+          ng:'合格する は動詞辭書形 → ために。'
+        }
+      ]},
+      {type:'qs',num:'04',label:'情境造句',time:10,items:[
+        {t:'compose',id:'q_3_4a',num:'問題 4-1',
+          sit:'你為了存錢買新手機，開始減少外食。\n用「ために」寫 1 句。',
+          ph:'新しいスマホを買うために…',
+          req:['ために','ため'],
+          good:['買う','節約','外食'],
+          ex:'スマホを買うために、外食を減らしました。',
+          gkey:'ために'
+        },
+        {t:'compose',id:'q_3_4b',num:'問題 4-2',
+          sit:'為了讓客人聽清楚，店員說話很慢。\n用「ように」寫 1 句。\n（感受 ために vs ように 的差異）',
+          ph:'聞こえるように…',
+          req:['ように','よう'],
+          good:['聞こえ','ゆっくり','話す'],
+          ex:'お客さんに聞こえるように、ゆっくり話しました。',
+          gkey:'ように'
+        }
+      ]},
+      {type:'reading',num:'05',label:'讀解練習',time:25,
+        text:'私は去年、日本語能力試験のN3を受けました。試験に合格するために、半年間毎日勉強しました。最初は単語を覚えることが一番難しかったですが、毎日少しずつ練習を続けた結果、だんだん読めるようになりました。また、日本のドラマを見て、リスニングも上手になりました。試験の結果は合格でした。次はN2を目指して、また頑張るつもりです。',
+        items:[
+          {t:'open',id:'rq_3_1',num:'問題 1',text:'この人がN3に合格できた理由は何ですか？',
+            ans_kw:['毎日','練習','続けた','ドラマ','リスニング'],
+            model:'毎日少しずつ練習を続けたこと、日本のドラマを見てリスニングを練習したこと。'},
+          {t:'open',id:'rq_3_2',num:'問題 2',text:'「ようになりました」は文章の中で何が変わりましたか？',
+            ans_kw:['読める','リスニング','上手'],
+            model:'読めるようになった（読解力）。'},
+          {t:'compose',id:'rq_3_3',num:'問題 3（自由）',
+            sit:'あなたもN2合格のために、今どんなことをしていますか？一文で書いてください。',
+            ph:'N2に合格するために…',
+            req:['ために','ため'],good:['勉強','練習','毎日'],
+            ex:'N2に合格するために、毎日練習問題を解いています。',gkey:'ために'}
+        ]
+      },
+      {type:'qs',num:'06',label:'理解追問',time:5,items:[
+        {t:'understand',id:'q_3_6',num:'問題 6',
+          prompt:'ために と ように、「後ろに来る動詞の種類」が違います。どう違うか、一言で説明してください。',
+          ph:'ために の後は意志動詞で…',
+          pairs:[['意志','ために'],['可能','ように'],['意志動詞','可能動詞'],['する','できる']],
+          strong:['意志','可能','意識','する動詞'],
+          tip:'ために → する/食べる（意志動詞）。ように → できる/見える（可能動詞）。',
+          expl:'ために → 意志動詞<br>ように → 可能動詞（できる/見える/聞こえる）'
+        }
+      ]}
+    ]
+  },
+
+  4: {
+    meta:{week:1,wd:'週四',topic:'〜てしまう',time:60,lv:'N3'},
+    parts:[
+      {type:'grammar',num:'01',label:'今日語法',time:10,
+        title:'〜てしまう',
+        why:['N3 必考 ★★★★★','日常会話高頻（ちゃった）','完了と遺憾の二種語意'],
+        sub:'同一語法，兩種語意：<strong>完了</strong>（做完了）和<strong>遺憾/意外</strong>（不小心/後悔）。靠語境判斷。',
+        pat:['<strong>動詞て形</strong> ＋ しまう','口語：〜てしまう → 〜ちゃう','口語：〜でしまう → 〜じゃう'],
+        ex:[
+          {jp:'宿題を全部やって<em>しまった</em>。',tr:'作業全部做完了。（完了）'},
+          {jp:'大切なものを忘れて<em>しまった</em>。',tr:'把重要的東西忘了。（遺憾）'},
+          {jp:'ケーキを全部食べて<em>しまって</em>、後悔している。',tr:'把蛋糕全吃完了，很後悔。（遺憾）'}
+        ],
+        scene:'昨日、大事な約束を忘れて<em>しまいました</em>。友達をずっと待たせて<em>しまって</em>、本当に申し訳なかったです。謝ろうと思って電話したら、もう電池が切れて<em>しまっていました</em>。',
+        conf_cols:['語意','例文','感情'],
+        conf_rows:[
+          ['完了','宿題をやってしまった。','中性/安心'],
+          ['遺憾','財布を落としてしまった。','後悔/困る'],
+          ['意外','こんなに食べてしまった。','驚き/後悔']
+        ]
+      },
+      {type:'qs',num:'02',label:'情境選擇',time:5,items:[
+        {t:'choice',id:'q_4_2a',num:'問題 2-1',ctx:'',
+          text:'大切なメールを消して＿＿＿、困っています。',
+          opts:['しまって','いて','おいて'],
+          ans:0,
+          ok:'正確！消してしまって 表示遺憾（不小心刪掉了）。',
+          ng:[null,'いて は継続状態。','おいて は「放在那裡」，語意不符。']
+        },
+        {t:'choice',id:'q_4_2b',num:'問題 2-2',ctx:'',
+          text:'下面哪句「てしまう」表示「完了（不含遺憾）」？',
+          opts:['宿題を全部やってしまった。（安心した）','大事な資料を捨ててしまった。（後悔している）'],
+          ans:0,
+          ok:'正確！宿題をやってしまった 帶著安心感，是純粹的完了。',
+          ng:[null,'捨ててしまった 帶著後悔，是遺憾用法。']
+        }
+      ]},
+      {type:'qs',num:'03',label:'主動填空',time:10,items:[
+        {t:'fill',id:'q_4_3a',num:'問題 3-1（遺憾）',
+          text:'テスト前なのに、ゲームを三時間＿＿＿＿＿＿＿。（てしまう、遺憾の意味）',
+          hint:'動詞て形＋しまった',
+          ans:['してしまった','やってしまった','してしまいました','遊んでしまった'],
+          ok:'遺憾用法正確！',ng:'遊んでしまった / してしまった（て形＋しまった）。'
+        },
+        {t:'fill',id:'q_4_3b',num:'問題 3-2（完了）',
+          text:'やっと全部の荷物を部屋に運び＿＿＿＿＿＿＿。（てしまう、完了の意味）',
+          hint:'動詞て形＋しまった',
+          ans:['終わってしまった','てしまった','てしまいました','おわってしまった'],
+          ok:'完了用法正確！',ng:'運んでしまった / 運び終わってしまった。'
+        },
+        {t:'fill',id:'q_4_3c',num:'問題 3-3（口語形）',
+          text:'昨日買ったケーキを、もう全部食べて＿＿＿＿＿。（口語形で答えること）',
+          hint:'てしまった の口語形は…',
+          ans:['ちゃった','しまった'],
+          ok:'口語形ちゃった 正確！',ng:'食べてしまった の口語形は 食べちゃった。'
+        }
+      ]},
+      {type:'qs',num:'04',label:'情境造句',time:10,items:[
+        {t:'compose',id:'q_4_4a',num:'問題 4-1',
+          sit:'你花了一整天把本週的 Try N3 作業全部完成了。\n用「てしまう（完了）」寫 1 句。',
+          ph:'今週の宿題を全部…',
+          req:['てしまい','てしまっ','ちゃっ','じゃっ'],
+          good:['全部','やって','終わって','宿題'],
+          ex:'今週のN3の宿題を全部やってしまいました。',
+          gkey:'てしまう（完了）'
+        },
+        {t:'compose',id:'q_4_4b',num:'問題 4-2',
+          sit:'你睡過頭，錯過了重要的課。\n用「てしまう（遺憾）」寫 1–2 句。',
+          ph:'寝坊して…',
+          req:['てしまい','てしまっ','ちゃっ'],
+          good:['寝坊','遅刻','授業','大事'],
+          ex:'寝坊してしまって、大事な授業に遅刻してしまいました。',
+          gkey:'てしまう（遺憾）'
+        }
+      ]},
+      {type:'qs',num:'05',label:'前兩天語法綜合複習',time:20,items:[
+        {t:'fill',id:'q_4_5a',num:'① 目的（ために）',
+          text:'合格する＿＿＿、毎日３時間勉強している。',hint:'',
+          ans:['ために','ため'],ok:'ために 正確！',ng:'目的を表す → ために。'
+        },
+        {t:'fill',id:'q_4_5b',num:'② 自然變化（ようになる）',
+          text:'練習を続けて、ギターが弾ける＿＿＿＿＿＿＿。',hint:'',
+          ans:['ようになりました','ようになった'],ok:'ようになる 正確！',ng:'能力の自然変化 → ようになる。'
+        },
+        {t:'fill',id:'q_4_5c',num:'③ 遺憾（てしまう）',
+          text:'大切な約束を忘れて＿＿＿＿、本当に申し訳ない。',hint:'',
+          ans:['しまって','しまい'],ok:'てしまう 正確！',ng:'忘れてしまって（て形＋しまって）。'
+        },
+        {t:'fill',id:'q_4_5d',num:'④ 以便（ように）',
+          text:'もっとよく聞こえる＿＿＿、もう少し大きく話してください。',hint:'',
+          ans:['ように','よう'],ok:'ように 正確！',ng:'聞こえる は可能動詞 → ように。'
+        },
+        {t:'fill',id:'q_4_5e',num:'⑤ 能力變化（ようになる）',
+          text:'日本に来て半年で、一人で電車に乗れる＿＿＿＿＿＿＿。',hint:'',
+          ans:['ようになりました','ようになった'],ok:'ようになる 正確！',ng:'能力が自然に身についた → ようになる。'
+        }
+      ]},
+      {type:'qs',num:'06',label:'理解追問',time:5,items:[
+        {t:'understand',id:'q_4_6',num:'問題 6',
+          prompt:'「てしまう」の二つの意味（完了・遺憾）、どうやって区別しますか？自分の言葉で一言説明してください。',
+          ph:'完了は達成感があって…',
+          pairs:[['後悔','遺憾'],['完了','達成'],['感情','文脈'],['安心','後悔']],
+          strong:['後悔','完了','感情','文脈','安心','遺憾'],
+          tip:'文脈と感情で判断。後悔・困る → 遺憾。安心・達成感 → 完了。',
+          expl:'完了：達成感・安心感あり<br>遺憾：後悔・困惑・意外感あり'
+        }
+      ]}
+    ]
+  },
+
+  5: {
+    meta:{week:1,wd:'週五',topic:'〜はずだ＋4語法對比',time:60,lv:'N3'},
+    parts:[
+      {type:'grammar',num:'01',label:'今日語法',time:10,
+        title:'〜はずだ',
+        why:['N3 頻出 ★★★★☆','讀解・聽解常出現','易混淆：でしょう'],
+        sub:'根據具體理由，表達<strong>有根據的確信</strong>。和でしょう不同，必須有理由。',
+        pat:['<strong>動詞普通形</strong> ＋ はずだ','<strong>い形容詞</strong> ＋ はずだ','<strong>な形容詞</strong> ＋ なはずだ','<strong>名詞</strong> ＋ のはずだ'],
+        ex:[
+          {jp:'彼は毎日練習しているから、上手な<em>はずだ</em>。',tr:'他每天練習，應該很厲害。（有根據的確信）'},
+          {jp:'電車は5時に出発する<em>はずです</em>。',tr:'電車應該5點出發。（根據時刻表）'},
+          {jp:'あれだけ勉強したから、合格する<em>はずだ</em>。',tr:'讀了那麼多，應該會通過。（合理推測）'}
+        ],
+        scene:'田中さんは今日のパーティーに来る<em>はずです</em>。昨日、「絶対に行く」と言っていたからです。でも、もう30分待っているのに、まだ来ません。もうすぐ来る<em>はずですが</em>、少し心配です。',
+        conf_cols:['','はずだ','でしょう'],
+        conf_rows:[
+          ['根據','有具體根據','單純推測'],
+          ['確信度','高（我相信如此）','中（大概是這樣）'],
+          ['例','勉強したから合格するはずだ','明日は晴れるでしょう']
+        ]
+      },
+      {type:'qs',num:'02',label:'情境選擇',time:5,items:[
+        {t:'choice',id:'q_5_2a',num:'問題 2-1',ctx:'',
+          text:'彼女は毎日泳いでいるから、水泳がとても上手な＿＿＿。',
+          opts:['はずだ','でしょう','らしい'],
+          ans:0,
+          ok:'正確！「毎日泳いでいるから」是具體根據，用はずだ。',
+          ng:[null,'でしょう は根據が薄い時に使う。ここでは具体的な根拠がある。','らしい は伝聞（聽說…）。']
+        },
+        {t:'choice',id:'q_5_2b',num:'問題 2-2',ctx:'情境：天氣預報說明天下雨，但你也沒把握。',
+          text:'下面哪句最自然？',
+          opts:['明日は雨のはずです。','明日は雨でしょう。'],
+          ans:1,
+          ok:'正確！天氣只是預報，沒有強烈根據，用でしょう 更自然。',
+          ng:['はずです 表示有強烈根據的確信。天氣預報不確定，用でしょう 更自然。',null]
+        }
+      ]},
+      {type:'qs',num:'03',label:'主動填空',time:5,items:[
+        {t:'fill',id:'q_5_3a',num:'問題 3-1',
+          text:'あれだけ練習したから、今日の試合には勝てる＿＿＿＿＿。',hint:'',
+          ans:['はずだ','はずです'],ok:'はずだ 正確！有根據的確信。',ng:'「あれだけ練習した」是具体根拠 → はずだ。'
+        },
+        {t:'fill',id:'q_5_3b',num:'問題 3-2',
+          text:'彼は地図を持っているから、道に迷わない＿＿＿＿＿＿＿。',hint:'',
+          ans:['はずだ','はずです'],ok:'正確！',ng:'「地図を持っている」は具体的な根拠 → はずだ。'
+        }
+      ]},
+      {type:'qs',num:'04',label:'今週4語法混合填空（無提示）',time:25,items:[
+        {t:'fill',id:'q_5_4a',num:'① ようになる',
+          text:'毎日漢字を練習したら、だんだん読める＿＿＿＿＿＿＿。',hint:'',
+          ans:['ようになった','ようになりました'],ok:'ようになる 正確！',ng:'自然に能力がついた → ようになる。'
+        },
+        {t:'fill',id:'q_5_4b',num:'② ために',
+          text:'N2に合格する＿＿＿、毎日２時間以上勉強しています。',hint:'',
+          ans:['ために','ため'],ok:'ために 正確！',ng:'目的を表す → ために。'
+        },
+        {t:'fill',id:'q_5_4c',num:'③ はずだ',
+          text:'彼はもう連絡をくれた＿＿＿なのに、まだメールが来ない。',hint:'',
+          ans:['はずだ','はずです','はず'],ok:'はずだ 正確！',ng:'根拠のある確信 → はずだ。'
+        },
+        {t:'fill',id:'q_5_4d',num:'④ てしまう',
+          text:'昨日の夜、ドラマを見ながらケーキを全部食べて＿＿＿＿＿。',hint:'',
+          ans:['しまった','しまいました','ちゃった'],ok:'てしまう 正確！',ng:'食べてしまった（遺憾または完了）。'
+        }
+      ]},
+      {type:'qs',num:'05',label:'情境造句（4語法）',time:10,items:[
+        {t:'compose',id:'q_5_5',num:'問題 5',
+          sit:'情境：你為了通過 N2，開始每天讀書。讀了三個月後，閱讀速度變快了。但昨天熬夜讀書，把時間表全打亂了。你相信只要繼續努力，一定能通過考試。\n\n請用 ために、ようになる、てしまう、はずだ 各造 1 句。',
+          ph:'N2に合格するために…',
+          req:['ために'],
+          good:['ようになる','てしまう','はずだ','ために'],
+          ex:'N2に合格するために毎日勉強しています。読む速度が速くなるようになりました。昨日夜更かしをしてしまいました。努力すれば合格できるはずです。',
+          gkey:'4語法綜合'
+        }
+      ]},
+      {type:'qs',num:'06',label:'理解追問',time:5,items:[
+        {t:'understand',id:'q_5_6',num:'問題 6',
+          prompt:'今週学んだ4つの文法、一番難しかったのはどれですか？どこが難しかったか、一言で。',
+          ph:'一番難しかったのは…',
+          pairs:[['難','しかった'],['難しい','']],
+          strong:['ようになる','ために','てしまう','はずだ','難しい','難','混乱'],
+          tip:'この答えが週日複盤の重点になります！',
+          expl:'（自由回答 - どれでも正解です）'
+        }
+      ]}
+    ]
+  },
+
+  6: {
+    meta:{week:1,wd:'週六',topic:'綜合練習＋單字',time:120,lv:'N3'},
+    parts:[
+      {type:'vocab',num:'01',label:'本週單字（形容詞・名詞組）',time:20,
+        note:'蓋住中文欄，看日文說出意思。答不出來的字 → 加入單字本。',
+        words:[
+          {w:'丁寧',r:'ていねい',pos:'な形',m:'仔細/有禮貌',ex:'丁寧に説明する。'},
+          {w:'正確',r:'せいかく',pos:'な形',m:'正確',ex:'正確な情報。'},
+          {w:'急に',r:'きゅうに',pos:'副詞',m:'突然',ex:'急に雨が降った。'},
+          {w:'特に',r:'とくに',pos:'副詞',m:'特別是',ex:'特に難しい問題。'},
+          {w:'以上',r:'いじょう',pos:'名詞',m:'以上',ex:'三時間以上勉強した。'},
+          {w:'以下',r:'いか',pos:'名詞',m:'以下',ex:'10点以下は不合格。'},
+          {w:'理由',r:'りゆう',pos:'名詞',m:'理由',ex:'理由を説明する。'},
+          {w:'目的',r:'もくてき',pos:'名詞',m:'目的',ex:'旅行の目的。'},
+          {w:'結果',r:'けっか',pos:'名詞',m:'結果',ex:'試験の結果が出た。'},
+          {w:'経験',r:'けいけん',pos:'名詞',m:'經驗',ex:'良い経験になった。'}
+        ]
+      },
+      {type:'reading',num:'02',label:'讀解（長篇）',time:30,
+        text:`私は去年から日本語の勉強を始めました。最初は平仮名さえ読めませんでしたが、毎日練習を続けた結果、今ではニュースも少しずつ読めるようになりました。
+
+日本語を上達させるために、私はいくつかのことを実践しています。まず、毎日30分は必ず日本語のポッドキャストを聞きます。次に、気になった表現はすぐにノートに書き留めます。
+
+もちろん、失敗したこともあります。先週は大事な単語を覚えていたのに、テストのときに全部忘れてしまいました。悔しかったですが、また一から覚え直しました。
+
+来月、JLPT N3の試験を受けます。毎日頑張っているので、合格できるはずです。試験が終わったら、すぐにN2の勉強を始めるつもりです。`,
+        items:[
+          {t:'open',id:'rq_6_1',num:'問題 1',text:'この人の日本語学習方法を二つ書いてください。',
+            ans_kw:['ポッドキャスト','ノート','書き留める'],
+            model:'①毎日30分ポッドキャストを聞く。②気になった表現をノートに書き留める。'},
+          {t:'open',id:'rq_6_2',num:'問題 2',text:'先週の「失敗」とは何ですか？',
+            ans_kw:['単語','忘れて','テスト'],
+            model:'テストのときに覚えていた単語を全部忘れてしまったこと。'},
+          {t:'open',id:'rq_6_3',num:'問題 3',text:'この人がN3に合格できると思う理由は何ですか？',
+            ans_kw:['毎日','頑張って'],
+            model:'毎日頑張って勉強しているから。'},
+          {t:'open',id:'rq_6_4',num:'問題 4（応用）',text:'「はずです」を「でしょう」に変えると、どんなニュアンスの違いがありますか？',
+            ans_kw:['根拠','確信','推測'],
+            model:'はずです は根拠のある確信。でしょう に変えると確信度が下がり、単純な推測になる。'}
+        ]
+      },
+      {type:'qs',num:'03',label:'本週語法まとめ自由作文',time:20,items:[
+        {t:'compose',id:'q_6_fw',num:'自由作文',
+          sit:'今週の4文法（ようになる・ために・てしまう・はずだ）を使って、自分のN2勉強について一段落（4〜6文）書いてください。',
+          ph:'N2合格のために…',
+          req:['ために'],
+          good:['ようになる','てしまう','はずだ','ために'],
+          ex:'N2に合格するために毎日勉強しています。最初は難しかったですが、だんだん問題が解けるようになりました。昨日は疲れて寝てしまいましたが、今日は挽回するはずです。',
+          gkey:'4語法綜合'
+        }
+      ]}
+    ]
+  },
+
+  7: {
+    meta:{week:1,wd:'週日',topic:'Week 1 複盤',time:120,lv:'複盤'},
+    parts:[
+      {type:'day7',num:'01',label:'Week 1 全複盤'}
+    ]
   }
 };
-const Q5_RULES = {
-  correct_keywords: [
-    ['自然','変化'], ['自然','なる'], ['勝手','変わ'],
-    ['意識','する'], ['刻意','做'], ['自然','變化'],
-    ['自然の変化','ようになる'], ['ようにする','意志'],
-    ['自然','になる'], ['刻意','努力']
-  ],
-  tip: '覚え方：ようになる＝気づいたら変わっていた。ようにする＝意識して行動する。'
-};
 
-// ── Kanji ──
-// Session vocab list (resets each page load)
-S.vocab = [];
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const DAY = parseInt(new URLSearchParams(location.search).get('day')||'1');
+const META = C[DAY]?.meta || C[1].meta;
+let ST = { fills:{}, composes:{}, understands:{}, choices:{}, opens:{}, vocab:[], confirmed:{} };
 
-function toggleK(el) {
-  const was = el.classList.contains('open');
-  document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open'));
-  if (!was) {
-    let p = el.querySelector('.k-popup');
-    if (!p) {
-      p = document.createElement('div');
-      p.className = 'k-popup';
-      el.appendChild(p);
-    }
-    // Get surrounding sentence as example
-    const sentence = el.closest('.ex-jp, .scene-text, .q-text') || el.parentElement;
-    const exText = sentence ? sentence.textContent.trim().slice(0, 60) : '';
-    p.innerHTML = `
-      <div class="k-reading">${el.dataset.r}</div>
-      <div class="k-meaning">${el.dataset.m}</div>
-      <div class="add-vocab" id="av-${el.dataset.r}" onclick="addV(event, this, '${el.dataset.m}', '${el.dataset.r}', \`${exText.replace(/`/g,"'")}\`)">＋ 加入單字本</div>`;
+// ═══════════════════════════════════════════════════
+// HEADER / NAV
+// ═══════════════════════════════════════════════════
+document.getElementById('chip-wk').textContent = `WEEK ${META.week} · DAY ${DAY}`;
+document.getElementById('chip-tm').textContent = `${META.wd} · ${META.time} min`;
+document.getElementById('chip-lv').textContent = META.lv;
+document.getElementById('nav-cur').textContent = `Day ${DAY} / 90`;
+if(DAY>1){const p=document.getElementById('nav-prev');p.href=`index.html?day=${DAY-1}`;p.style.visibility='visible';}
+if(DAY<90) document.getElementById('nav-next').href=`index.html?day=${DAY+1}`;
+
+// ═══════════════════════════════════════════════════
+// KANJI TOOLTIP
+// ═══════════════════════════════════════════════════
+function toggleK(el){
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.k.open').forEach(k=>k.classList.remove('open'));
+  if(!was){
+    let p=el.querySelector('.kp');
+    if(!p){p=document.createElement('div');p.className='kp';el.appendChild(p);}
+    const sent=el.closest('.exjp,.sc-txt,.qtext,.read-txt,.multi-blank,.sitbox')||el.parentElement;
+    const ex=sent?sent.textContent.trim().slice(0,55):'';
+    p.innerHTML=`<div class="kr">${el.dataset.r}</div><div class="km">${el.dataset.m}</div><div class="kbtn" id="kb-${el.dataset.r}" onclick="addV(event,this,'${el.dataset.m}','${el.dataset.r}',\`${ex.replace(/`/g,"'")}\`)">＋ 加入單字本</div>`;
     el.classList.add('open');
   }
 }
+document.addEventListener('click',e=>{if(!e.target.closest('.k')&&!e.target.closest('.kp'))document.querySelectorAll('.k.open').forEach(k=>k.classList.remove('open'));});
 
-document.addEventListener('click', e => {
-  if (!e.target.closest('.k') && !e.target.closest('.k-popup')) {
-    document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open'));
+function addV(ev,btn,m,r,ex){
+  ev.stopPropagation();
+  if(btn.classList.contains('saved'))return;
+  btn.textContent='✓ 已加入';btn.classList.add('saved');
+  if(!ST.vocab.find(v=>v.r===r)) ST.vocab.push({m,r,ex,date:new Date().toISOString().slice(0,10)});
+  document.getElementById('vcnt').textContent=ST.vocab.length;
+  document.getElementById('vbar').classList.add('on');
+}
+function dlVocab(){
+  if(!ST.vocab.length)return;
+  const today=new Date().toISOString().slice(0,10);
+  let md=`---\ndate: ${today}\ntype: 單字本\ntag: #單字 #Week1\n---\n\n# ${today} 單字本\n\n| 單字 | 讀音 | 意思 | 例句 |\n|------|------|------|------|\n`;
+  ST.vocab.forEach(v=>{const w=v.m.split('・')[0];const mn=v.m.split('・')[1]||'';md+=`| ${w} | ${v.r} | ${mn} | ${v.ex} |\n`;});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download=`${today}-單字本.md`;a.click();
+}
+
+// ═══════════════════════════════════════════════════
+// RENDERERS
+// ═══════════════════════════════════════════════════
+function render(){
+  const data=C[DAY];
+  if(!data){document.getElementById('root').innerHTML=`<div class="card"><p>Day ${DAY} 的內容準備中。</p></div>`;return;}
+  let html='';
+  let pIdx=0;
+  data.parts.forEach(part=>{
+    pIdx++;
+    html+=`<div class="ph"><span class="pn">${part.num||String(pIdx).padStart(2,'0')}</span><span class="pt">${part.label}</span><div class="pl"></div>${part.time?`<span class="ptm">${part.time} min</span>`:''}` +'</div>';
+    html+=renderPart(part);
+  });
+  html+=buildSubmitSection();
+  document.getElementById('root').innerHTML=html;
+  document.getElementById('pbar').style.width='20%';
+  checkSubmitReady();
+}
+
+function renderPart(p){
+  if(p.type==='grammar') return renderGrammar(p);
+  if(p.type==='review') return renderReview(p);
+  if(p.type==='vocab') return renderVocab(p);
+  if(p.type==='reading') return renderReading(p);
+  if(p.type==='qs') return renderQs(p);
+  if(p.type==='day7') return renderDay7();
+  return '';
+}
+
+function renderGrammar(p){
+  const whys=p.why.map(w=>`<span class="why">${w}</span>`).join('');
+  const pats=p.pat.map(pt=>`${pt}`).join('<br>');
+  const exs=p.ex.map(e=>`<div class="exitem"><div class="exjp">${kify(e.jp)}</div><div class="extr">（${e.tr}）</div></div>`).join('');
+  let conf='';
+  if(p.conf_cols&&p.conf_rows){
+    const ths=p.conf_cols.map(c=>`<th>${c}</th>`).join('');
+    const trs=p.conf_rows.map(r=>`<tr>${r.map((c,i)=>`<td${i===0?' style="font-family:\'Noto Serif JP\',serif"':''}>${c}</td>`).join('')}</tr>`).join('');
+    conf=`<div class="conf-lbl">⚠ 混淆提醒</div><table class="ctable"><tr>${ths}</tr>${trs}</table>`;
   }
-});
-
-function addV(event, btn, m, r, ex) {
-  event.stopPropagation(); // prevent popup closing
-  if (btn.classList.contains('saved')) return;
-  btn.textContent = '✓ 已加入'; btn.classList.add('saved');
-
-  // Add to session array if not duplicate
-  if (!S.vocab.find(v => v.r === r)) {
-    S.vocab.push({ m, r, ex, date: new Date().toISOString().slice(0,10) });
-  }
-
-  // Update counter bar
-  document.getElementById('vocab-count').textContent = S.vocab.length;
-  document.getElementById('vocab-bar').classList.add('on');
+  return `<div class="card"><div class="why-row">${whys}</div><div class="gtitle">${p.title}</div><div class="gsub">${p.sub}</div><div class="gpat">${pats}</div><div class="divl"></div><div class="sc-lbl">例句</div><div class="exlist">${exs}</div><div class="sc-lbl">使用場景</div><div class="sc-txt">${kify(p.scene)}</div><div class="divl"></div>${conf}</div>`;
 }
 
-function downloadVocab() {
-  if (!S.vocab.length) return;
-  const today = new Date().toISOString().slice(0,10);
-  let md = `---\ndate: ${today}\ntype: 單字本\ntag: #單字 #Week1\n---\n\n# ${today} 單字本\n\n| 單字 | 讀音 | 意思 | 例句 |\n|------|------|------|------|\n`;
-  S.vocab.forEach(v => { md += `| ${v.m.split('・')[0]} | ${v.r} | ${v.m.split('・')[1] || ''} | ${v.ex} |\n`; });
-
-  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `${today}-單字本.md`; a.click();
-  URL.revokeObjectURL(url);
+function renderReview(p){
+  const items=p.items.map(it=>`<div class="review-item"><div class="review-jp">${kify(it.jp)}</div><div class="review-note">${it.note}</div></div>`).join('');
+  return `<div class="card"><div style="font-size:13px;color:var(--ink2);margin-bottom:14px">${p.note}</div>${items}</div>`;
 }
 
-// ── Choices ──
-function pick(g, i, correct) {
-  if (S[g] !== null) return;
-  const btns = [...document.querySelectorAll(`#${g} .choice`)];
-  const letters = ['A','B','C'];
-  S[g] = letters[i];
-  const ok = letters[i] === correct;
-  btns[i].classList.add(ok ? 'correct' : 'wrong');
-  if (!ok) btns[letters.indexOf(correct)].classList.add('correct');
-  btns.forEach(b => { b.onclick = null; });
-
-  const msgs = {
-    'c2a': { ok: '正確！情境說「意識的に」→ 刻意決定的行為，所以用ようにする。', B: 'B 正確。情境含「意識的に（有意識地）」，這是刻意的行為，不是自然變化。', A: '這題關鍵詞是「意識的に（刻意地）」，代表是主動決定，不是自然發生的變化。', C: 'ことになる 表示因外部決定被安排，不符合此情境。' },
-    'c2b': { ok: '正確！三年自然練習後能力提升，是典型的ようになりました。', A: 'A 正確。「自然に」理解，是能力的自然增長，用ようになる。', B: 'ようにする 是刻意努力去做。但題目說「自然に」理解，代表是自然變化。', C: 'はずになりました 不是正確的語法組合。' }
-  };
-  const m = msgs[g];
-  const key = ok ? 'ok' : letters[i];
-  showFb(document.getElementById('fb' + (g === 'c2a' ? '2a' : '2b')), ok, m[key] || '請再複習混淆提醒表。');
-  checkReady();
+function renderVocab(p){
+  const rows=p.words.map(w=>`<tr><td><span class="k" onclick="toggleK(this)" data-r="${w.r}" data-m="${w.w}・${w.m}">${w.w}</span></td><td>${w.r}</td><td>${w.pos}</td><td>${w.m}</td><td style="color:var(--ink2)">${w.ex}</td></tr>`).join('');
+  return `<div class="card"><div style="font-size:13px;color:var(--ink2);margin-bottom:14px">${p.note}</div><table class="vtable"><tr><th>單字</th><th>讀音</th><th>詞性</th><th>中文</th><th>例句</th></tr>${rows}</table></div>`;
 }
 
-function showFb(el, ok, msg) {
-  el.className = `feedback on ${ok ? 'correct' : 'wrong'}`;
-  el.innerHTML = `<div class="feedback-label">${ok ? '✓ 正確' : '✗ 錯誤'}</div><div class="feedback-body">${msg}</div>`;
+function renderReading(p){
+  const qs=p.items.map(q=>renderReadingQ(q)).join('');
+  return `<div class="card"><div class="sc-lbl">文章</div><div class="read-txt">${kify(p.text)}</div><div class="divl"></div>${qs}</div>`;
 }
 
-// ── Q3 ──
-document.getElementById('q3').addEventListener('input', function() {
-  const hasVal = this.value.trim().length > 0;
-  document.getElementById('q3-confirm').disabled = !hasVal;
-  checkReady();
-});
-
-function confirmQ3() {
-  const v = document.getElementById('q3').value.trim();
-  if (!v) return;
-  const ok = ['ようになりました','ようになった'].some(c => v.includes(c));
-  S.q3ok = ok;
-  // Lock input and button after confirming
-  document.getElementById('q3').disabled = true;
-  document.getElementById('q3-confirm').disabled = true;
-  document.getElementById('q3-confirm').textContent = ok ? '✓ 正確' : '✗ 確認完畢';
-  document.getElementById('q3-confirm').style.background = ok ? 'var(--green)' : 'var(--red)';
-  document.getElementById('q3-confirm').style.borderColor = ok ? 'var(--green)' : 'var(--red)';
-  showFb(document.getElementById('fb3'), ok,
-    ok
-      ? 'よくできました！「ようになりました」で能力の変化を正しく表現できています。'
-      : `正解は「<strong>ようになりました</strong>」。<br>あなたの答え：${v}<br><br>💡 動詞可能形（聞き取れる）＋ ようになりました`
-  );
-  checkReady();
+function renderReadingQ(q){
+  if(q.t==='open') return `<div style="margin-bottom:20px"><div class="qnum">${q.num}</div><div class="qtext">${kify(q.text)}</div><textarea class="area-in" id="${q.id}" placeholder="答えを書いてください…" oninput="onTextarea('${q.id}')"></textarea><div class="ld" id="ld_${q.id}"><div class="dots"><span></span><span></span><span></span></div>確認中…</div><div class="fb" id="fb_${q.id}"></div></div>`;
+  if(q.t==='compose') return renderCompose(q);
+  return '';
 }
 
-// ── Submit All ──
-async function submitAll() {
-  document.getElementById('sub-btn').disabled = true;
-  document.getElementById('prog').style.width = '70%';
-
-  const q3v = document.getElementById('q3').value.trim();
-  if (S.q3ok === null) { S.q3ok = ['ようになりました','ようになった'].some(c => q3v.includes(c)); }
-
-  S.q4v = document.getElementById('q4').value.trim();
-  S.q5v = document.getElementById('q5').value.trim();
-
-  document.getElementById('ld4').classList.add('on');
-  await sleep(400);
-  S.r4 = gradeQ4(S.q4v);
-  document.getElementById('ld4').classList.remove('on');
-  showFb(document.getElementById('fb4'), S.r4.ok, S.r4.msg);
-
-  document.getElementById('ld5').classList.add('on');
-  await sleep(400);
-  S.r5 = gradeQ5(S.q5v);
-  document.getElementById('ld5').classList.remove('on');
-  showFb(document.getElementById('fb5'), S.r5.ok, S.r5.msg);
-
-  document.getElementById('prog').style.width = '100%';
-  showResults();
+function renderQs(p){
+  return p.items.map(q=>renderQ(q)).join('');
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function gradeQ4(ans) {
-  if (!ans || ans.length < 3) return { ok: false, msg: '未作答。' };
-  const hasYou = Q4_RULES.required.some(k => ans.includes(k));
-  const goodCount = Q4_RULES.good.filter(k => ans.includes(k)).length;
-
-  if (!hasYou) {
-    return {
-      ok: false,
-      msg: `「ようになる」が見当たりません。<br><br>✏️ 例：<em>${Q4_RULES.corrections.noYou}</em><br><br>💡 能力の自然変化を表すとき → 動詞可能形 ＋ ようになりました。`
-    };
-  }
-  if (goodCount >= 2) {
-    return {
-      ok: true,
-      msg: `よくできました！文の構造も自然です。<br><br>💡 「ようになる」は能力が自然に身についたことを表す、N3 最重要文法の一つです。`
-    };
-  }
-  return {
-    ok: true,
-    msg: `「ようになる」を正しく使えています。<br><br>✏️ より自然な表現：<em>${Q4_RULES.corrections.noYou}</em><br><br>💡 「一人で〜できる」という表現を一緒に覚えましょう。`
-  };
+function renderQ(q){
+  if(q.t==='choice') return renderChoice(q);
+  if(q.t==='fill') return renderFill(q);
+  if(q.t==='compose') return renderCompose(q);
+  if(q.t==='understand') return renderUnderstand(q);
+  return '';
 }
 
-function gradeQ5(ans) {
-  if (!ans || ans.length < 3) return { ok: false, msg: '未作答。' };
-  const lower = ans.toLowerCase();
-  const matched = Q5_RULES.correct_keywords.some(pair =>
-    pair.every(k => lower.includes(k) || ans.includes(k))
-  );
-  // Also check for single strong keywords
-  const strong = ['自然','刻意','意識','勝手に','automatically','intentional'].some(k => ans.includes(k));
-
-  if (matched || strong) {
-    return {
-      ok: true,
-      msg: `正解！核心の違いを理解しています。<br><br>💡 ${Q5_RULES.tip}`
-    };
-  }
-  return {
-    ok: false,
-    msg: `もう少し！<br><br>✏️ ポイント：<br>
-    ・ようになる＝<em>自然に</em>変化が起きる（気づいたらできていた）<br>
-    ・ようにする＝<em>意識的に</em>行動する（自分で決めてやる）<br><br>
-    💡 ${Q5_RULES.tip}`
-  };
+function renderChoice(q){
+  const ctx=q.ctx?`<div class="qctx">${kify(q.ctx)}</div>`:'';
+  const opts=q.opts.map((o,i)=>`<button class="choice" id="${q.id}_${i}" onclick="pickChoice('${q.id}',${i},${q.ans})"><span class="ckey">${String.fromCharCode(65+i)}</span>${o}</button>`).join('');
+  return `<div class="card"><div class="qnum">${q.num}</div>${ctx}<div class="qtext">${kify(q.text)}</div><div class="choices">${opts}</div><div class="fb" id="fb_${q.id}"></div></div>`;
 }
 
-// ── Results ──
-function showResults() {
-  const oks = [S.c2a === 'B', S.c2b === 'A', S.q3ok, S.r4?.ok, S.r5?.ok];
-  const total = oks.filter(Boolean).length;
-  const pct = Math.round(total / 5 * 100);
-
-  document.getElementById('score-big').textContent = total;
-  document.getElementById('score-tag').textContent = ['需要加強 💪','繼續努力 📖','不錯！ 👍','很好！ ⭐','完美！ 🎉'][total];
-  document.getElementById('err-pct').textContent = pct + '%';
-  const f = document.getElementById('err-fill');
-  f.style.width = pct + '%';
-  f.style.background = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--amber)' : 'var(--red)';
-
-  const rows = [
-    { label: '問題 2-1｜情境選擇', ok: oks[0], note: '關鍵詞「意識的に」→ 刻意行為 → ようにする' },
-    { label: '問題 2-2｜情境選擇', ok: oks[1], note: '「自然に」能力提升 → 自然變化 → ようになる' },
-    { label: '問題 3｜主動填空', ok: oks[2], note: '正解：聞き取れるようになりました（動詞可能形 ＋ ようになる ＋ 過去式）' },
-    { label: '問題 4｜情境造句', ok: oks[3], note: '' },
-    { label: '問題 5｜理解追問', ok: oks[4], note: '' },
-  ];
-
-  document.getElementById('result-body').innerHTML = rows.map(r => `
-    <div class="result-row">
-      <div class="result-q-label">${r.label}</div>
-      <div class="verdict ${r.ok ? 'v-ok' : 'v-ng'}">${r.ok ? '✓ 正確' : '✗ 錯誤'}</div>
-      ${!r.ok && r.note ? `<div class="result-analysis">${r.note}</div>` : ''}
-    </div>`).join('');
-
-  // Dynamic difficulty hint
-  const hint = document.createElement('div');
-  hint.className = `diff-hint ${pct >= 80 ? 'up' : 'down'}`;
-  hint.textContent = pct >= 80
-    ? '🎉 正確率高！明天練習加入「ために vs ようになる」對比題，難度提升一格。'
-    : '📌 ようになる 週三讀解會再出現，週日複盤重點練習。本週難度維持不變。';
-  document.getElementById('result-body').appendChild(hint);
-
-  document.getElementById('result-card').classList.add('on');
-  document.getElementById('obs-btn').style.display = 'flex';
-  document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  // ── Save progress to localStorage ──
-  const dayNum = parseInt(new URLSearchParams(window.location.search).get('day') || '1');
-  const existing = JSON.parse(localStorage.getItem('n2_progress') || '{}');
-  existing[`day_${dayNum}`] = {
-    completed: true,
-    score: total,
-    total: 5,
-    pct,
-    date: new Date().toISOString().slice(0,10),
-    vocab: S.vocab ? S.vocab.length : 0,
-    grammar_errors: {
-      'ようになる': !(oks[0] && oks[1] && oks[2] && oks[3])
-    },
-    errors: [
-      !oks[0] && '問題2-1：ようにする混淆',
-      !oks[1] && '問題2-2：ようになる混淆',
-      !oks[2] && '問題3：填空錯誤',
-      !oks[3] && '問題4：造句錯誤',
-      !oks[4] && '問題5：理解追問',
-    ].filter(Boolean)
-  };
-  localStorage.setItem('n2_progress', JSON.stringify(existing));
-
-  // Show progress link hint
-  const pHint = document.createElement('div');
-  pHint.style.cssText = 'margin-top:12px;font-size:13px;color:var(--ink2);text-align:center;';
-  pHint.innerHTML = `<a href="progress.html" style="color:var(--ink2);text-decoration:underline;">查看今日進度儀表板 →</a>`;
-  document.getElementById('result-body').appendChild(pHint);
+function renderFill(q){
+  return `<div class="card"><div class="qnum">${q.num}</div><div class="qtext">${kify(q.text)}</div><input class="fill-in" id="${q.id}" type="text" placeholder="請直接填入正確形式…" oninput="onFillInput('${q.id}')" onkeydown="if(event.key==='Enter')confirmFill('${q.id}')"><div class="hint">${q.hint}</div><div class="btn-row"><button class="btn btn-p" id="cfm_${q.id}" onclick="confirmFill('${q.id}')" disabled>確認答案 →</button></div><div class="fb" id="fb_${q.id}"></div></div>`;
 }
 
-// ── Obsidian ──
-function copyObs() {
-  const today = new Date().toISOString().slice(0,10);
-  const oks = [S.c2a === 'B', S.c2b === 'A', S.q3ok, S.r4?.ok, S.r5?.ok];
-  const total = oks.filter(Boolean).length;
-  const pct = Math.round(total / 5 * 100);
-  const labels = ['問題2-1 情境選擇', '問題2-2 情境選擇', '問題3 主動填空', '問題4 情境造句', '問題5 理解追問'];
+function renderCompose(q){
+  return `<div class="card"><div class="qnum">${q.num||''}</div><div class="sitbox">${q.sit}</div><textarea class="area-in" id="${q.id}" placeholder="${q.ph}" oninput="onTextarea('${q.id}')"></textarea><div class="ld" id="ld_${q.id}"><div class="dots"><span></span><span></span><span></span></div>批改中…</div><div class="fb" id="fb_${q.id}"></div></div>`;
+}
 
-  let md = `---\ndate: ${today}\ngrammar: ようになる\nweek: 1\nday: 1\nscore: ${total}/5\naccuracy: ${pct}%\ntag: #N3語法 #Week1\n---\n\n# ${today} · Day 1 · 〜ようになる\n\n## 練習結果\n\n`;
-  md += `| 題目 | 結果 |\n|------|------|\n`;
-  labels.forEach((l, i) => { md += `| ${l} | ${oks[i] ? '○ 正確' : '✗ 錯誤'} |\n`; });
+function renderUnderstand(q){
+  return `<div class="card"><div class="qnum">${q.num}</div><div class="sitbox">${q.prompt}</div><textarea class="area-in" id="${q.id}" placeholder="${q.ph}" oninput="onTextarea('${q.id}')"></textarea><div class="ld" id="ld_${q.id}"><div class="dots"><span></span><span></span><span></span></div>確認中…</div><div class="fb" id="fb_${q.id}"></div></div>`;
+}
 
-  md += `\n## 錯題分析\n`;
-  if (!oks[0]) md += `\n### 問題2-1\n- 正解：ようにしました\n- 理由：情境含「意識的に」→ 刻意行為 → ようにする\n`;
-  if (!oks[1]) md += `\n### 問題2-2\n- 正解：ようになりました\n- 理由：「自然に」能力提升 → 自然變化 → ようになる\n`;
-  if (!oks[2]) md += `\n### 問題3\n- 正解：聞き取れるようになりました\n- 理由：動詞可能形 ＋ ようになる ＋ 過去式\n`;
-  if (!oks[3] && S.q4v) md += `\n### 問題4 造句\n- 我的答案：${S.q4v}\n- 正例：一人で電車に乗れるようになりました。\n`;
-  if (!oks[4] && S.q5v) md += `\n### 問題5 理解追問\n- 我的答案：${S.q5v}\n- 正解：ようになる＝自然変化、ようにする＝意識的行動\n`;
+function renderDay7(){
+  const prog=getProgress();
+  const days=[1,2,3,4,5,6];
+  const gkeys=['ようになる','ために','てしまう','はずだ'];
+  let statHtml=`<div class="card"><div class="stat-grid">`;
+  const done=days.filter(d=>prog[`day_${d}`]?.completed).length;
+  const avgAcc=done>0?Math.round(days.filter(d=>prog[`day_${d}`]?.completed).reduce((a,d)=>a+(prog[`day_${d}`].pct||0),0)/done):0;
+  const totalVocab=Object.values(prog).reduce((a,b)=>a+(b.vocab||0),0);
+  statHtml+=`<div class="stat-c"><div class="stat-lbl">完成天數</div><div class="stat-v">${done}/6</div></div>`;
+  statHtml+=`<div class="stat-c"><div class="stat-lbl">平均正確率</div><div class="stat-v">${avgAcc}%</div></div>`;
+  statHtml+=`<div class="stat-c"><div class="stat-lbl">單字累計</div><div class="stat-v">${totalVocab}個</div></div>`;
+  const daysLeft=Math.max(0,Math.floor((new Date('2025-07-05')-new Date())/86400000));
+  statHtml+=`<div class="stat-c"><div class="stat-lbl">距N2考試</div><div class="stat-v">${daysLeft}天</div></div>`;
+  statHtml+='</div>';
+  statHtml+='<div class="divl"></div><div class="sc-lbl">語法掌握度</div>';
+  gkeys.forEach(g=>{
+    const errs=days.filter(d=>prog[`day_${d}`]?.grammar_errors?.[g]===true).length;
+    const practiced=days.filter(d=>prog[`day_${d}`]?.grammar_errors!==undefined).length;
+    const acc=practiced>0?Math.round((1-errs/Math.max(practiced,1))*100):0;
+    const col=acc>=80?'var(--green)':acc>=50?'var(--amb)':'var(--red)';
+    statHtml+=`<div class="gbr-row"><div class="gbr-head"><span class="gbr-name">${g}</span><span class="gbr-pct">${practiced>0?acc+'%':'未練習'}</span></div><div class="gbr"><div class="gbrf" style="width:${acc}%;background:${col}"></div></div></div>`;
+  });
+  statHtml+='</div>';
 
-  md += `\n## 今日語法重點\n\n\`\`\`\nようになる → 自然の変化（気づいたらできていた）\nようにする → 意識的な行動（自分で決めてやる）\n\`\`\`\n\n## 要記住的例句\n\n- 練習したら、漢字が書けるようになった。\n- 子どもの頃は魚が嫌いだったが、今は食べられるようになった。\n- 一人で電車に乗れるようになりました。\n\n## 次回複習タイミング\n\n- 明日：ようになる の復習問題\n- 週日：錯題集中複盤\n`;
+  // Weakest grammar re-practice
+  let weakestG=null,lowestAcc=101;
+  gkeys.forEach(g=>{
+    const errs=days.filter(d=>prog[`day_${d}`]?.grammar_errors?.[g]===true).length;
+    const practiced=days.filter(d=>prog[`day_${d}`]?.completed).length;
+    if(practiced>0){const acc=Math.round((1-errs/Math.max(practiced,1))*100);if(acc<lowestAcc){lowestAcc=acc;weakestG=g;}}
+  });
 
-  // Append vocab if any words were added today
-  if (S.vocab && S.vocab.length > 0) {
-    md += `\n---\n\n## 今日單字本（${S.vocab.length} 個）\n\n| 單字 | 讀音 | 意思 | 來源例句 |\n|------|------|------|----------|\n`;
-    S.vocab.forEach(v => {
-      const word = v.m.split('・')[0] || v.m;
-      const meaning = v.m.split('・')[1] || '';
-      md += `| ${word} | ${v.r} | ${meaning} | ${v.ex} |\n`;
-    });
+  let weakHtml='';
+  if(weakestG&&lowestAcc<80){
+    weakHtml=`<div class="card" style="border-color:var(--red)"><div class="sc-lbl" style="color:var(--red)">⚠ 弱項集中補強：${weakestG}（正確率 ${lowestAcc}%）</div><div style="font-size:13px;color:var(--ink2);margin-bottom:14px">根據本週錯誤率，請重新練習這個語法。</div>`;
+    const repQ={t:'compose',id:'q_7_weak',num:'補強造句',sit:`請用「${weakestG}」造出 2 句自然的日文句子。`,ph:`${weakestG}を使って…`,req:weakestG.includes('ように')?['ように','よう']:[weakestG.replace('〜','')],good:[],ex:'',gkey:weakestG};
+    weakHtml+=renderCompose(repQ);
+    weakHtml+='</div>';
   }
 
-  // Download as .md file
-  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${today}-Day1-ようになる.md`;
-  a.click();
-  URL.revokeObjectURL(url);
-
-  const btn = document.getElementById('obs-btn');
-  btn.classList.add('saved');
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 已下載！拖入 Obsidian 資料夾`;
-  setTimeout(() => {
-    btn.classList.remove('saved');
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> 下載今日學習紀錄 (.md)`;
-  }, 3000);
+  return statHtml+weakHtml;
 }
 
-// ── Ready check ──
-function checkReady() {
-  const q3confirmed = S.q3ok !== null;
-  const ok = S.c2a && S.c2b
-    && q3confirmed
-    && document.getElementById('q4').value.trim().length > 3
-    && document.getElementById('q5').value.trim().length > 3;
-  document.getElementById('sub-btn').disabled = !ok;
+function buildSubmitSection(){
+  if(DAY===7) return `<div class="btn-row" style="margin-top:20px"><a class="btn nav-a" href="progress.html">查看進度儀表板 →</a></div>`;
+  return `<div class="btn-row" style="margin-top:24px"><button class="btn btn-p" id="sub-btn" onclick="submitAll()" disabled>提交全部答案 →</button></div><div class="res-card" id="res-card"><div class="res-hdr"><div class="srow"><span class="sbig" id="sbig">–</span><span class="sof" id="sof">/ 0</span><span class="stag" id="stag"></span></div><div class="ebl"><span>正確率</span><span id="epct">–</span></div><div class="ebar"><div class="efil" id="efil" style="width:0%"></div></div></div><div class="res-body" id="res-body"></div></div><button class="dl-btn" id="dl-btn" onclick="dlRecord()"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>下載今日學習紀錄 (.md)</button><div class="prog-link" id="prog-link" style="display:none"><a href="progress.html">查看進度儀表板 →</a></div>`;
 }
+
+// ═══════════════════════════════════════════════════
+// INTERACTION HANDLERS
+// ═══════════════════════════════════════════════════
+function pickChoice(id,idx,correct){
+  if(id in ST.choices) return;
+  ST.choices[id]=idx;
+  const btns=document.querySelectorAll(`[id^="${id}_"]`);
+  btns.forEach(b=>b.onclick=null);
+  btns[idx].classList.add(idx===correct?'correct':'wrong');
+  if(idx!==correct) btns[correct].classList.add('correct');
+
+  const qData=findQ(id);
+  const ok=idx===correct;
+  const msg=ok?qData.ok:(qData.ng[idx]||'請再看看混淆提醒表。');
+  showFb(`fb_${id}`,ok,msg);
+  checkSubmitReady();
+}
+
+function onFillInput(id){
+  const v=document.getElementById(id).value.trim();
+  const cfm=document.getElementById(`cfm_${id}`);
+  if(cfm) cfm.disabled=v.length<1;
+  checkSubmitReady();
+}
+
+function confirmFill(id){
+  const v=document.getElementById(id)?.value.trim();
+  if(!v) return;
+  const q=findQ(id);
+  if(!q) return;
+  const ok=q.ans.some(a=>v.includes(a));
+  ST.fills[id]={ok,v};
+  ST.confirmed[id]=true;
+  const inp=document.getElementById(id);
+  const cfm=document.getElementById(`cfm_${id}`);
+  if(inp) inp.disabled=true;
+  if(cfm){cfm.disabled=true;cfm.textContent=ok?'✓ 正確':'✗ 確認完畢';cfm.style.background=ok?'var(--green)':'var(--red)';cfm.style.borderColor=cfm.style.background;}
+  showFb(`fb_${id}`,ok,ok?q.ok:`${q.ng}<br><br>💡 你的答案：${v}`);
+  checkSubmitReady();
+}
+
+function onTextarea(id){
+  ST.composes[id]=document.getElementById(id)?.value.trim()||'';
+  checkSubmitReady();
+}
+
+function checkSubmitReady(){
+  const btn=document.getElementById('sub-btn');
+  if(!btn) return;
+  const data=C[DAY];if(!data) return;
+  let allDone=true;
+  data.parts.forEach(p=>{
+    if(p.type==='qs'||p.type==='reading'){
+      const items=p.items||[];
+      items.forEach(q=>{
+        if(q.t==='choice'&&!(q.id in ST.choices)) allDone=false;
+        if(q.t==='fill'&&!ST.confirmed[q.id]) allDone=false;
+        if((q.t==='compose'||q.t==='understand'||q.t==='open')&&(!ST.composes[q.id]||ST.composes[q.id].length<3)) allDone=false;
+      });
+    }
+  });
+  btn.disabled=!allDone;
+}
+
+// ═══════════════════════════════════════════════════
+// GRADING
+// ═══════════════════════════════════════════════════
+function gradeCompose(q,val){
+  if(!val||val.length<2) return {ok:false,msg:'未作答。'};
+  const hasReq=q.req.some(r=>val.includes(r));
+  const goodCount=(q.good||[]).filter(g=>val.includes(g)).length;
+  if(!hasReq) return {ok:false,msg:`「${q.req[0]}」が見当たりません。<br><br>✏️ 例：<em>${q.ex}</em><br><br>💡 ${q.gkey} を使って文を作ってください。`};
+  if(goodCount>=2) return {ok:true,msg:`よくできました！文の構造も自然です。<br><br>💡 参考：<em>${q.ex}</em>`};
+  return {ok:true,msg:`「${q.req[0]}」を正しく使えています。<br><br>✏️ 参考：<em>${q.ex}</em>`};
+}
+
+function gradeUnderstand(q,val){
+  if(!val||val.length<2) return {ok:false,msg:'未作答。'};
+  const l=val.toLowerCase();
+  const matched=q.pairs&&q.pairs.some(pair=>pair.every(k=>l.includes(k)||val.includes(k)));
+  const strong=q.strong&&q.strong.some(k=>val.includes(k));
+  if(matched||strong) return {ok:true,msg:`正解！核心の違いを理解しています。<br><br>💡 ${q.tip}`};
+  return {ok:false,msg:`もう少し！<br><br>${q.expl}<br><br>💡 ${q.tip}`};
+}
+
+function gradeOpen(q,val){
+  if(!val||val.length<2) return {ok:false,msg:'未作答。'};
+  const hit=q.ans_kw&&q.ans_kw.some(k=>val.includes(k));
+  if(hit) return {ok:true,msg:`キーワードが含まれています。<br><br>📝 参考答案：${q.model}`};
+  return {ok:false,msg:`もう一度考えてみましょう。<br><br>📝 参考答案：${q.model}`};
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════
+async function submitAll(){
+  const btn=document.getElementById('sub-btn');
+  btn.disabled=true;
+  document.getElementById('pbar').style.width='70%';
+
+  const data=C[DAY];
+  const results=[];
+
+  // Collect all gradeable questions
+  const allQs=[];
+  data.parts.forEach(p=>{
+    if(p.type==='qs'||p.type==='reading') (p.items||[]).forEach(q=>allQs.push(q));
+  });
+
+  allQs.forEach(q=>{
+    if(q.t==='choice'){
+      const idx=ST.choices[q.id]??-1;
+      const ok=idx===q.ans;
+      results.push({id:q.id,label:q.num,ok,note:ok?null:(q.ng[idx]||'請再看看混淆提醒表。')});
+    }
+    if(q.t==='fill'){
+      const r=ST.fills[q.id];
+      results.push({id:q.id,label:q.num,ok:r?.ok??false,note:r?.ok?null:q.ng});
+    }
+    if(q.t==='compose'){
+      const v=ST.composes[q.id]||'';
+      const r=gradeCompose(q,v);
+      showFb(`fb_${q.id}`,r.ok,r.msg);
+      results.push({id:q.id,label:q.num||'造句',ok:r.ok,note:r.ok?null:r.msg,gkey:q.gkey});
+    }
+    if(q.t==='understand'){
+      const v=ST.composes[q.id]||'';
+      const r=gradeUnderstand(q,v);
+      showFb(`fb_${q.id}`,r.ok,r.msg);
+      results.push({id:q.id,label:q.num,ok:r.ok,note:r.ok?null:r.msg});
+    }
+    if(q.t==='open'){
+      const v=ST.composes[q.id]||'';
+      const r=gradeOpen(q,v);
+      showFb(`fb_${q.id}`,r.ok,r.msg);
+      results.push({id:q.id,label:q.num,ok:r.ok,note:r.ok?null:r.msg});
+    }
+  });
+
+  document.getElementById('pbar').style.width='100%';
+  showResults(results);
+  saveProgress(results);
+}
+
+function showResults(results){
+  const total=results.length;
+  const correct=results.filter(r=>r.ok).length;
+  const pct=total>0?Math.round(correct/total*100):0;
+
+  document.getElementById('sbig').textContent=correct;
+  document.getElementById('sof').textContent=`/ ${total}`;
+  document.getElementById('stag').textContent=['需要加強 💪','繼續努力 📖','不錯！ 👍','很好！ ⭐','完美！ 🎉'][Math.min(Math.round(correct/total*4),4)];
+  document.getElementById('epct').textContent=pct+'%';
+  const ef=document.getElementById('efil');
+  ef.style.width=pct+'%';
+  ef.style.background=pct>=80?'var(--green)':pct>=60?'var(--amb)':'var(--red)';
+
+  let html='';
+  results.forEach(r=>{
+    html+=`<div class="rrow"><div class="rlbl">${r.label}</div><div class="vrd ${r.ok?'vok':'vng'}">${r.ok?'✓ 正確':'✗ 錯誤'}</div>${!r.ok&&r.note?`<div class="ranalysis">${r.note}</div>`:''}</div>`;
+  });
+  const dhint=document.createElement('div');
+  dhint.className=`dhint ${pct>=80?'up':'down'}`;
+  dhint.textContent=pct>=80?'🎉 正確率高！下次練習難度提升一格。':'📌 週日複盤會針對錯誤率最高的語法重練。難度維持不變。';
+  document.getElementById('res-body').innerHTML=html;
+  document.getElementById('res-body').appendChild(dhint);
+  document.getElementById('res-card').classList.add('on');
+  document.getElementById('dl-btn').style.display='flex';
+  document.getElementById('prog-link').style.display='block';
+  document.getElementById('res-card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════════════════
+// PROGRESS SAVE / LOAD
+// ═══════════════════════════════════════════════════
+function saveProgress(results){
+  const total=results.length,correct=results.filter(r=>r.ok).length;
+  const pct=total>0?Math.round(correct/total*100):0;
+  const prog=getProgress();
+  const gerrs={};
+  results.forEach(r=>{if(r.gkey) gerrs[r.gkey]=!r.ok;});
+  prog[`day_${DAY}`]={completed:true,score:correct,total,pct,date:new Date().toISOString().slice(0,10),vocab:ST.vocab.length,grammar_errors:gerrs,errors:results.filter(r=>!r.ok).map(r=>r.label)};
+  localStorage.setItem('n2_progress',JSON.stringify(prog));
+}
+
+function getProgress(){
+  try{return JSON.parse(localStorage.getItem('n2_progress')||'{}');}catch(e){return {};}
+}
+
+// ═══════════════════════════════════════════════════
+// DOWNLOAD RECORD
+// ═══════════════════════════════════════════════════
+function dlRecord(){
+  const today=new Date().toISOString().slice(0,10);
+  const prog=getProgress();
+  const d=prog[`day_${DAY}`];
+  if(!d) return;
+  let md=`---\ndate: ${today}\nday: ${DAY}\ntopic: ${META.topic}\nscore: ${d.score}/${d.total}\naccuracy: ${d.pct}%\ntag: #N3語法 #Week${META.week}\n---\n\n# ${today} · Day ${DAY} · ${META.topic}\n\n## 練習結果\n\n| 題目 | 結果 |\n|------|------|\n`;
+  (d.errors||[]).forEach(e=>{md+=`| ${e} | ✗ 錯誤 |\n`;});
+  md+=`\n分數：${d.score}/${d.total}（${d.pct}%）\n`;
+  if(d.errors&&d.errors.length>0) md+=`\n## 錯題\n\n${d.errors.map(e=>`- ${e}`).join('\n')}\n`;
+  if(ST.vocab&&ST.vocab.length>0){
+    md+=`\n## 今日單字本（${ST.vocab.length} 個）\n\n| 單字 | 讀音 | 意思 |\n|------|------|------|\n`;
+    ST.vocab.forEach(v=>{const w=v.m.split('・')[0];const mn=v.m.split('・')[1]||'';md+=`| ${w} | ${v.r} | ${mn} |\n`;});
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download=`${today}-Day${DAY}-${META.topic}.md`;a.click();
+  const btn=document.getElementById('dl-btn');
+  btn.classList.add('saved');btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>已下載！拖入 Obsidian 資料夾';
+  setTimeout(()=>{btn.classList.remove('saved');btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>下載今日學習紀錄 (.md)';},3000);
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+function showFb(elId,ok,msg){
+  const el=document.getElementById(elId);
+  if(!el) return;
+  el.className=`fb on ${ok?'ok':'ng'}`;
+  el.innerHTML=`<div class="fb-lbl">${ok?'✓ 正確':'✗ 錯誤'}</div><div class="fb-body">${msg}</div>`;
+}
+
+function findQ(id){
+  const data=C[DAY];if(!data) return null;
+  for(const p of data.parts){
+    const items=p.items||[];
+    for(const q of items){if(q.id===id) return q;}
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+render();
 </script>
 </body>
 </html>
