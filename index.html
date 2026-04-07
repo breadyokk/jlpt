@@ -16,6 +16,12 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding-bottom: 80px; }
+.nav-link { font-size: 12px; color: var(--ink2); text-decoration: none; display: flex; align-items: center; gap: 5px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); transition: all .15s; }
+.nav-link:hover { background: var(--bg2); }
+.day-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--ink2); }
+.day-nav a { color: var(--ink2); text-decoration: none; display: flex; align-items: center; gap: 4px; }
+.day-nav a:hover { color: var(--ink); }
+.day-nav .current { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); }
 
 
 
@@ -179,11 +185,20 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 <header class="header">
   <span class="logo">日語練習</span>
   <div class="header-meta">
-    <span class="chip">WEEK 1 · DAY 1</span>
-    <span class="chip">週一 · 30 min</span>
+    <span class="chip" id="chip-week">WEEK 1 · DAY 1</span>
+    <span class="chip" id="chip-time">週一 · 30 min</span>
     <span class="chip chip-red">N3</span>
+    <a class="nav-link" href="progress.html">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 12l4-4 3 3 5-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      進度
+    </a>
   </div>
 </header>
+<div class="day-nav" id="day-nav">
+  <a id="nav-prev" href="#" style="visibility:hidden">← 上一天</a>
+  <span class="current" id="nav-current">Day 1 / 90</span>
+  <a id="nav-next" href="#">下一天 →</a>
+</div>
 <div class="prog-wrap"><div class="prog-fill" id="prog" style="width:20%"></div></div>
 
 <div class="main">
@@ -353,6 +368,37 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 </div>
 
 <script>
+// ── Day navigation ──
+const DAY_META = {
+  1: { week:1, weekday:'週一', topic:'〜ようになる', time:30 },
+  2: { week:1, weekday:'週二', topic:'ようになる 複習＋單字', time:30 },
+  3: { week:1, weekday:'週三', topic:'〜ために＋讀解', time:60 },
+  4: { week:1, weekday:'週四', topic:'〜てしまう', time:60 },
+  5: { week:1, weekday:'週五', topic:'〜はずだ＋對比', time:60 },
+  6: { week:1, weekday:'週六', topic:'綜合練習', time:120 },
+  7: { week:1, weekday:'週日', topic:'Week 1 複盤', time:120 },
+};
+const currentDay = parseInt(new URLSearchParams(window.location.search).get('day') || '1');
+const meta = DAY_META[currentDay] || DAY_META[1];
+
+// Update header chips
+document.getElementById('chip-week').textContent = `WEEK ${meta.week} · DAY ${currentDay}`;
+document.getElementById('chip-time').textContent = `${meta.weekday} · ${meta.time} min`;
+
+// Update day nav
+document.getElementById('nav-current').textContent = `Day ${currentDay} / 90`;
+if (currentDay > 1) {
+  const prev = document.getElementById('nav-prev');
+  prev.href = `index.html?day=${currentDay - 1}`;
+  prev.style.visibility = 'visible';
+}
+if (currentDay < 90) {
+  document.getElementById('nav-next').href = `index.html?day=${currentDay + 1}`;
+}
+
+// ── State ──
+const S = { c2a: null, c2b: null, q3ok: null, r4: null, r5: null, q4v: '', q5v: '' };
+
 // ── Local grading rules for Q4 & Q5 ──
 const Q4_RULES = {
   required: ['ようになり','ようになっ','ようになる'],
@@ -371,9 +417,6 @@ const Q5_RULES = {
   ],
   tip: '覚え方：ようになる＝気づいたら変わっていた。ようにする＝意識して行動する。'
 };
-
-// ── State ──
-const S = { c2a: null, c2b: null, q3ok: null, r4: null, r5: null, q4v: '', q5v: '' };
 
 // ── Kanji ──
 // Session vocab list (resets each page load)
@@ -601,6 +644,35 @@ function showResults() {
   document.getElementById('result-card').classList.add('on');
   document.getElementById('obs-btn').style.display = 'flex';
   document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // ── Save progress to localStorage ──
+  const dayNum = parseInt(new URLSearchParams(window.location.search).get('day') || '1');
+  const existing = JSON.parse(localStorage.getItem('n2_progress') || '{}');
+  existing[`day_${dayNum}`] = {
+    completed: true,
+    score: total,
+    total: 5,
+    pct,
+    date: new Date().toISOString().slice(0,10),
+    vocab: S.vocab ? S.vocab.length : 0,
+    grammar_errors: {
+      'ようになる': !(oks[0] && oks[1] && oks[2] && oks[3])
+    },
+    errors: [
+      !oks[0] && '問題2-1：ようにする混淆',
+      !oks[1] && '問題2-2：ようになる混淆',
+      !oks[2] && '問題3：填空錯誤',
+      !oks[3] && '問題4：造句錯誤',
+      !oks[4] && '問題5：理解追問',
+    ].filter(Boolean)
+  };
+  localStorage.setItem('n2_progress', JSON.stringify(existing));
+
+  // Show progress link hint
+  const pHint = document.createElement('div');
+  pHint.style.cssText = 'margin-top:12px;font-size:13px;color:var(--ink2);text-align:center;';
+  pHint.innerHTML = `<a href="progress.html" style="color:var(--ink2);text-decoration:underline;">查看今日進度儀表板 →</a>`;
+  document.getElementById('result-body').appendChild(pHint);
 }
 
 // ── Obsidian ──
