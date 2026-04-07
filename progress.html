@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習進度｜N2 計劃</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F5F2EB; --bg2:#EDEAE0; --surface:#FDFCF8;
+  --ink:#1C1A16; --ink2:#6B6456; --ink3:#A89F92;
+  --red:#8B1A1A; --red-l:#F7EDED;
+  --green:#2D5233; --green-l:#EBF2EC;
+  --amber:#7A5C1E; --amber-l:#F7F1E3;
+  --border:#DDD8CE; --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px}
+
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:2px}
+.nav-link{font-size:13px;color:var(--ink2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);cursor:pointer;transition:all .15s}
+.nav-link:hover{background:var(--bg2)}
+
+.main{max-width:720px;margin:0 auto;padding:32px 20px}
+
+/* ── Metric cards ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.metric-label{font-size:11px;color:var(--ink3);margin-bottom:6px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+.metric-val{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--ink)}
+.metric-sub{font-size:11px;color:var(--ink3);margin-top:4px}
+
+/* ── Section ── */
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sec-title{font-size:11px;font-weight:500;color:var(--ink2);letter-spacing:1.5px;text-transform:uppercase}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* ── Week grid ── */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:28px}
+.day-cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
+.day-cell:hover{border-color:var(--ink2);background:var(--bg)}
+.day-cell.done{background:var(--green-l);border-color:var(--green)}
+.day-cell.today{border-color:var(--ink);border-width:2px}
+.day-cell.locked{opacity:.4;cursor:not-allowed;pointer-events:none}
+.day-cell.ahead{background:var(--amber-l);border-color:var(--amber)}
+.dc-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--ink3);margin-bottom:4px}
+.dc-day{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.dc-topic{font-size:10px;color:var(--ink2);line-height:1.4}
+.dc-score{font-size:11px;margin-top:4px}
+.dc-score.ok{color:var(--green)}
+.dc-score.ng{color:var(--red)}
+
+/* ── Error rate bars ── */
+.grammar-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.grammar-row{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.gr-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.gr-name{font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink)}
+.gr-status{font-size:11px;padding:2px 8px;border-radius:20px}
+.gr-status.ok{background:var(--green-l);color:var(--green)}
+.gr-status.warn{background:var(--amber-l);color:var(--amber)}
+.gr-status.bad{background:var(--red-l);color:var(--red)}
+.gr-status.new{background:var(--bg2);color:var(--ink3)}
+.gr-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.gr-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.gr-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:6px}
+
+/* ── Calendar strip ── */
+.calendar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:28px}
+.cal-month{font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:12px;font-family:'DM Mono',monospace}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-wday{font-size:10px;color:var(--ink3);text-align:center;padding:2px 0;font-family:'DM Mono',monospace}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:50%;cursor:default}
+.cal-day.done{background:var(--ink);color:#fff}
+.cal-day.today{border:2px solid var(--ink);font-weight:500}
+.cal-day.exam{background:var(--red);color:#fff}
+.cal-day.empty{opacity:0}
+
+/* ── Next action ── */
+.next-card{background:var(--ink);color:#fff;border-radius:var(--r);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.next-label{font-size:11px;color:rgba(255,255,255,.5);font-family:'DM Mono',monospace;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.next-title{font-size:18px;font-family:'Noto Serif JP',serif;font-weight:300;margin-bottom:4px}
+.next-meta{font-size:12px;color:rgba(255,255,255,.5)}
+.next-btn{background:#fff;color:var(--ink);border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:500;font-family:'Noto Sans JP',sans-serif;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;transition:opacity .15s}
+.next-btn:hover{opacity:.85}
+
+/* ── Dynamic adjust ── */
+.adjust-card{border-radius:var(--r);padding:16px 20px;margin-bottom:28px;border:1px solid}
+.adjust-card.up{background:var(--green-l);border-color:var(--green)}
+.adjust-card.down{background:var(--amber-l);border-color:var(--amber)}
+.adjust-card.neutral{background:var(--bg2);border-color:var(--border)}
+.adjust-title{font-size:13px;font-weight:500;margin-bottom:4px}
+.adjust-card.up .adjust-title{color:var(--green)}
+.adjust-card.down .adjust-title{color:var(--amber)}
+.adjust-card.neutral .adjust-title{color:var(--ink2)}
+.adjust-body{font-size:13px;color:var(--ink2);line-height:1.7}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="logo">進度儀表板</span>
+  <a class="nav-link" id="practice-link" href="index.html">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    今日練習
+  </a>
+</header>
+
+<div class="main">
+
+  <!-- ── Metrics ── -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label">完成天數</div>
+      <div class="metric-val" id="m-days">0</div>
+      <div class="metric-sub">/ 90 天</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">本週正確率</div>
+      <div class="metric-val" id="m-acc">–</div>
+      <div class="metric-sub" id="m-acc-sub">尚未開始</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">單字累計</div>
+      <div class="metric-val" id="m-vocab">0</div>
+      <div class="metric-sub">個</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">距離 N2</div>
+      <div class="metric-val" id="m-days-left">–</div>
+      <div class="metric-sub">天 (5 July)</div>
+    </div>
+  </div>
+
+  <!-- ── Next action ── -->
+  <div class="next-card" id="next-card">
+    <div>
+      <div class="next-label">下一步</div>
+      <div class="next-title" id="next-title">載入中…</div>
+      <div class="next-meta" id="next-meta"></div>
+    </div>
+    <a class="next-btn" id="next-btn" href="index.html">開始 →</a>
+  </div>
+
+  <!-- ── Dynamic difficulty ── -->
+  <div class="adjust-card neutral" id="adjust-card">
+    <div class="adjust-title" id="adjust-title">難度調整狀態</div>
+    <div class="adjust-body" id="adjust-body">完成第一天練習後，系統會根據你的錯誤率動態調整難度。</div>
+  </div>
+
+  <!-- ── Week 1 Grid ── -->
+  <div class="sec-head">
+    <span class="sec-title">Week 1 進度</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="week-grid" id="week-grid"></div>
+
+  <!-- ── Grammar error rates ── -->
+  <div class="sec-head">
+    <span class="sec-title">語法掌握度</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="grammar-list" id="grammar-list"></div>
+
+  <!-- ── April Calendar ── -->
+  <div class="sec-head">
+    <span class="sec-title">4月行事曆</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="calendar">
+    <div class="cal-month">APRIL 2025</div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ── Curriculum data ──
+const WEEK1 = [
+  { day:1, weekday:'週一', topic:'〜ようになる', time:30, level:'N3' },
+  { day:2, weekday:'週二', topic:'ようになる 複習＋單字', time:30, level:'N3' },
+  { day:3, weekday:'週三', topic:'〜ために＋讀解', time:60, level:'N3' },
+  { day:4, weekday:'週四', topic:'〜てしまう', time:60, level:'N3' },
+  { day:5, weekday:'週五', topic:'〜はずだ＋對比', time:60, level:'N3' },
+  { day:6, weekday:'週六', topic:'綜合練習＋聽力', time:120, level:'N3' },
+  { day:7, weekday:'週日', topic:'Week 1 複盤', time:120, level:'複盤' },
+];
+
+const GRAMMAR_TRACKED = [
+  { key:'ようになる', name:'〜ようになる', desc:'自然變化' },
+  { key:'ために', name:'〜ために', desc:'目的' },
+  { key:'てしまう', name:'〜てしまう', desc:'完了/遺憾' },
+  { key:'はずだ', name:'〜はずだ', desc:'確信/預期' },
+];
+
+// ── Load progress from localStorage ──
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem('n2_progress') || '{}'); }
+  catch(e) { return {}; }
+}
+
+function getTodayDay() {
+  // Calculate which day we're on based on start date (April 7)
+  const start = new Date('2025-04-07');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  start.setHours(0,0,0,0);
+  const diff = Math.floor((today - start) / 86400000) + 1;
+  return Math.max(1, Math.min(diff, 90));
+}
+
+function getDaysUntilExam() {
+  const exam = new Date('2025-07-05');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  exam.setHours(0,0,0,0);
+  return Math.max(0, Math.floor((exam - today) / 86400000));
+}
+
+// ── Render metrics ──
+function renderMetrics(prog) {
+  const completed = Object.keys(prog).filter(k => prog[k].completed).length;
+  document.getElementById('m-days').textContent = completed;
+  document.getElementById('m-days-left').textContent = getDaysUntilExam();
+
+  // Vocab total
+  const vocabTotal = Object.values(prog).reduce((a,b) => a + (b.vocab || 0), 0);
+  document.getElementById('m-vocab').textContent = vocabTotal;
+
+  // This week accuracy
+  const weekScores = Object.values(prog).filter(d => d.completed && d.score !== undefined);
+  if (weekScores.length > 0) {
+    const avg = Math.round(weekScores.reduce((a,b) => a + (b.score/b.total*100), 0) / weekScores.length);
+    document.getElementById('m-acc').textContent = avg + '%';
+    document.getElementById('m-acc-sub').textContent = `${weekScores.length} 天平均`;
+  }
+}
+
+// ── Render week grid ──
+function renderWeekGrid(prog) {
+  const todayDay = getTodayDay();
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+
+  WEEK1.forEach(d => {
+    const p = prog[`day_${d.day}`];
+    const done = p?.completed;
+    const isToday = d.day === todayDay;
+    const isAhead = d.day > todayDay;
+    const locked = d.day > todayDay + 1; // can do next day ahead
+
+    let cls = 'day-cell';
+    if (done) cls += ' done';
+    else if (isToday) cls += ' today';
+    else if (!locked && isAhead) cls += ' ahead';
+    else if (locked) cls += ' locked';
+
+    const scoreHtml = done
+      ? `<div class="dc-score ok">${p.score}/${p.total} ✓</div>`
+      : isToday
+        ? `<div class="dc-score" style="color:var(--amber)">今日</div>`
+        : `<div class="dc-score" style="color:var(--ink3)">${d.time}分</div>`;
+
+    const link = locked ? 'javascript:void(0)' : `index.html?day=${d.day}`;
+    grid.innerHTML += `
+      <a class="${cls}" href="${link}">
+        <div class="dc-label">${d.weekday}</div>
+        <div class="dc-day">Day ${d.day}</div>
+        <div class="dc-topic">${d.topic}</div>
+        ${scoreHtml}
+      </a>`;
+  });
+}
+
+// ── Render grammar list ──
+function renderGrammar(prog) {
+  const list = document.getElementById('grammar-list');
+  list.innerHTML = '';
+
+  GRAMMAR_TRACKED.forEach(g => {
+    // Find all days where this grammar appeared
+    const attempts = Object.values(prog).filter(d => d.grammar_errors && d.grammar_errors[g.key] !== undefined);
+    const practiced = attempts.length > 0;
+
+    let accuracy = 0;
+    let statusCls = 'new';
+    let statusText = '未練習';
+
+    if (practiced) {
+      const totalOk = attempts.reduce((a,b) => a + (b.grammar_errors[g.key] ? 0 : 1), 0);
+      accuracy = Math.round(totalOk / attempts.length * 100);
+      if (accuracy >= 80) { statusCls = 'ok'; statusText = '掌握'; }
+      else if (accuracy >= 50) { statusCls = 'warn'; statusText = '練習中'; }
+      else { statusCls = 'bad'; statusText = '需加強'; }
+    }
+
+    const barColor = statusCls === 'ok' ? 'var(--green)' : statusCls === 'warn' ? 'var(--amber)' : statusCls === 'bad' ? 'var(--red)' : 'var(--border)';
+
+    list.innerHTML += `
+      <div class="grammar-row">
+        <div class="gr-head">
+          <span class="gr-name">${g.name} <span style="font-size:12px;color:var(--ink3)">${g.desc}</span></span>
+          <span class="gr-status ${statusCls}">${statusText}</span>
+        </div>
+        <div class="gr-bar"><div class="gr-fill" style="width:${accuracy}%;background:${barColor}"></div></div>
+        <div class="gr-meta">
+          <span>${practiced ? `${attempts.length} 次練習` : '尚未練習'}</span>
+          <span>${practiced ? accuracy + '%' : '–'}</span>
+        </div>
+      </div>`;
+  });
+}
+
+// ── Render next action ──
+function renderNext(prog) {
+  const todayDay = getTodayDay();
+  const todayDone = prog[`day_${todayDay}`]?.completed;
+
+  // Find next undone day
+  let nextDay = todayDay;
+  if (todayDone) nextDay = todayDay + 1;
+
+  const dayData = WEEK1.find(d => d.day === nextDay);
+  if (!dayData) {
+    document.getElementById('next-title').textContent = '本週全部完成！';
+    document.getElementById('next-meta').textContent = '等待下週內容';
+    document.getElementById('next-btn').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('next-title').textContent = `Day ${nextDay}｜${dayData.topic}`;
+  document.getElementById('next-meta').textContent = `${dayData.weekday} · ${dayData.time} 分鐘 · ${dayData.level}`;
+  document.getElementById('next-btn').href = `index.html?day=${nextDay}`;
+  document.getElementById('practice-link').href = `index.html?day=${nextDay}`;
+}
+
+// ── Dynamic difficulty adjustment ──
+function renderAdjust(prog) {
+  const completed = Object.values(prog).filter(d => d.completed);
+  if (completed.length === 0) return;
+
+  const recent = completed.slice(-3); // last 3 days
+  const avgAcc = recent.reduce((a,b) => a + (b.score/b.total*100), 0) / recent.length;
+
+  const card = document.getElementById('adjust-card');
+  const title = document.getElementById('adjust-title');
+  const body = document.getElementById('adjust-body');
+
+  if (avgAcc >= 80) {
+    card.className = 'adjust-card up';
+    title.textContent = '🎉 難度提升中';
+    body.textContent = `最近 ${recent.length} 天平均正確率 ${Math.round(avgAcc)}%。下次練習將加入易混淆語法對比題，難度提升一格。`;
+  } else if (avgAcc < 50) {
+    card.className = 'adjust-card down';
+    title.textContent = '📌 難度調降中';
+    body.textContent = `最近 ${recent.length} 天平均正確率 ${Math.round(avgAcc)}%。本週新語法暫停推進，集中複習弱項。週日複盤會針對錯誤率最高的語法重練。`;
+  } else {
+    card.className = 'adjust-card neutral';
+    title.textContent = '📖 正常推進';
+    body.textContent = `最近 ${recent.length} 天平均正確率 ${Math.round(avgAcc)}%。難度維持現狀，繼續按計劃學習。`;
+  }
+}
+
+// ── Render April calendar ──
+function renderCalendar(prog) {
+  const grid = document.getElementById('cal-grid');
+  const wdays = ['日','一','二','三','四','五','六'];
+  wdays.forEach(d => { grid.innerHTML += `<div class="cal-wday">${d}</div>`; });
+
+  const firstDay = new Date('2025-04-01').getDay(); // 2 = Tuesday
+  for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-day empty"></div>`;
+
+  const today = new Date();
+  const examDate = 5; // July 5 = just show April study days
+
+  for (let d = 1; d <= 30; d++) {
+    const date = `2025-04-${String(d).padStart(2,'0')}`;
+    const dayNum = Math.floor((new Date(date) - new Date('2025-04-07')) / 86400000) + 1;
+    const done = dayNum >= 1 && prog[`day_${dayNum}`]?.completed;
+    const isToday = today.getDate() === d && today.getMonth() === 3;
+
+    let cls = 'cal-day';
+    if (done) cls += ' done';
+    else if (isToday) cls += ' today';
+
+    grid.innerHTML += `<div class="${cls}">${d}</div>`;
+  }
+}
+
+// ── Init ──
+const prog = getProgress();
+renderMetrics(prog);
+renderWeekGrid(prog);
+renderGrammar(prog);
+renderNext(prog);
+renderAdjust(prog);
+renderCalendar(prog);
+</script>
+</body>
+</html>
