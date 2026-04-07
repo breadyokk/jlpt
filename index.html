@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日語練習 · Day 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F2EB; --bg2: #EDEAE0; --surface: #FDFCF8;
+  --ink: #1C1A16; --ink2: #6B6456; --ink3: #A89F92;
+  --red: #8B1A1A; --red-light: #F7EDED;
+  --green: #2D5233; --green-light: #EBF2EC;
+  --amber: #7A5C1E; --amber-light: #F7F1E3;
+  --border: #DDD8CE; --r: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding-bottom: 80px; }
+
+/* ── Setup Banner ── */
+.setup-banner {
+  background: #1C1A16; color: #fff;
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.setup-label { font-family: 'DM Mono', monospace; font-size: 11px; color: #888; white-space: nowrap; }
+.setup-input {
+  flex: 1; min-width: 280px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  border-radius: 6px; padding: 7px 12px; color: #fff; outline: none;
+}
+.setup-input::placeholder { color: #555; }
+.setup-input:focus { border-color: rgba(255,255,255,.4); }
+.setup-save {
+  font-family: 'Noto Sans JP', sans-serif; font-size: 12px;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; border-radius: 6px; padding: 7px 14px; cursor: pointer;
+  white-space: nowrap; transition: background .15s;
+}
+.setup-save:hover { background: rgba(255,255,255,.22); }
+.setup-status { font-size: 11px; color: #4CAF50; display: none; }
+.setup-status.on { display: block; }
+.setup-warn { font-size: 11px; color: #FF9800; }
+
+/* ── Header ── */
+.header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo { font-family: 'Noto Serif JP', serif; font-size: 16px; font-weight: 400; letter-spacing: 2px; }
+.header-meta { display: flex; align-items: center; gap: 8px; }
+.chip { font-family: 'DM Mono', monospace; font-size: 11px; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--ink2); background: var(--bg); }
+.chip-red { background: var(--red-light); color: var(--red); border-color: transparent; }
+
+/* ── Progress ── */
+.prog-wrap { background: var(--border); height: 3px; position: sticky; top: 49px; z-index: 99; }
+.prog-fill { height: 3px; background: var(--ink); transition: width .5s ease; }
+
+/* ── Layout ── */
+.main { max-width: 660px; margin: 0 auto; padding: 36px 20px; }
+
+/* ── Part Header ── */
+.part-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.part-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); width: 22px; text-align: right; }
+.part-title { font-size: 11px; font-weight: 500; color: var(--ink2); letter-spacing: 1.5px; text-transform: uppercase; }
+.part-line { flex: 1; height: 1px; background: var(--border); }
+.part-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); }
+
+/* ── Card ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px; margin-bottom: 14px; }
+
+/* ── Grammar ── */
+.grammar-why { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.why-tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--amber-light); color: var(--amber); font-weight: 500; }
+.grammar-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; letter-spacing: 3px; margin-bottom: 4px; }
+.grammar-sub { font-size: 13px; color: var(--ink2); margin-bottom: 20px; line-height: 1.7; }
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+.grammar-pattern { font-family: 'DM Mono', monospace; font-size: 12px; background: var(--bg2); border-radius: 6px; padding: 12px 16px; margin-bottom: 18px; line-height: 2; color: var(--ink2); }
+.grammar-pattern strong { color: var(--ink); }
+
+.ex-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.ex-item { border-left: 2px solid var(--border); padding-left: 14px; }
+.ex-jp { font-family: 'Noto Serif JP', serif; font-size: 15px; line-height: 2; margin-bottom: 2px; }
+.ex-jp em { font-style: normal; color: var(--red); font-weight: 500; }
+.ex-tr { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+
+.scene-label { font-size: 11px; color: var(--ink3); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.scene-text { font-family: 'Noto Serif JP', serif; font-size: 14px; line-height: 2.4; background: var(--bg); border-radius: 6px; padding: 16px 18px; margin-bottom: 10px; }
+.scene-text em { font-style: normal; color: var(--red); font-weight: 500; }
+.scene-q { font-size: 13px; color: var(--ink2); margin-bottom: 18px; }
+
+.conf-label { font-size: 11px; color: var(--red); font-weight: 500; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.conf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.conf-table th { text-align: left; padding: 8px 12px; background: var(--bg2); color: var(--ink2); font-weight: 500; font-size: 11px; }
+.conf-table td { padding: 10px 12px; border-top: 1px solid var(--border); line-height: 1.7; }
+.conf-table tr:last-child td { border-bottom: 1px solid var(--border); }
+.conf-table td:first-child { font-family: 'Noto Serif JP', serif; white-space: nowrap; }
+
+/* ── Kanji Reveal ── */
+.k { position: relative; cursor: pointer; border-bottom: 1px dashed var(--ink3); transition: border-color .15s; display: inline; }
+.k:hover { border-bottom-color: var(--red); }
+.k-popup { display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: var(--ink); color: #fff; border-radius: 8px; padding: 10px 14px; font-size: 12px; white-space: nowrap; z-index: 200; font-family: 'Noto Sans JP', sans-serif; line-height: 1.8; box-shadow: 0 4px 16px rgba(0,0,0,.2); pointer-events: none; }
+.k-popup::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
+.k.open .k-popup { display: block; }
+.k-popup .k-reading { font-size: 10px; color: #aaa; }
+.k-popup .k-meaning { font-size: 13px; font-weight: 500; }
+.add-vocab { pointer-events: all; display: inline-block; margin-top: 6px; font-size: 10px; padding: 2px 7px; border-radius: 10px; background: rgba(255,255,255,.15); cursor: pointer; border: 1px solid rgba(255,255,255,.3); transition: background .15s; }
+.add-vocab:hover { background: rgba(255,255,255,.3); }
+.add-vocab.saved { background: #2D5233; border-color: #2D5233; }
+
+/* ── Questions ── */
+.q-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink3); margin-bottom: 10px; }
+.q-context { font-size: 12px; color: var(--ink2); background: var(--amber-light); border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; line-height: 1.8; border-left: 2px solid var(--amber); }
+.q-text { font-family: 'Noto Serif JP', serif; font-size: 16px; line-height: 2.4; margin-bottom: 16px; }
+.blank { display: inline-block; min-width: 90px; border-bottom: 2px solid var(--ink); margin: 0 3px; vertical-align: bottom; height: 26px; }
+
+.choices { display: flex; flex-direction: column; gap: 8px; }
+.choice { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; cursor: pointer; transition: all .15s; background: var(--surface); font-family: 'Noto Serif JP', serif; font-size: 14px; color: var(--ink); text-align: left; line-height: 1.7; }
+.choice:hover:not(:disabled) { border-color: var(--ink2); background: var(--bg); }
+.choice.selected { border-color: var(--ink); background: var(--ink); color: #fff; }
+.choice.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+.choice.wrong { border-color: var(--red); background: var(--red-light); color: var(--red); }
+.choice-key { font-family: 'DM Mono', monospace; font-size: 11px; opacity: .5; flex-shrink: 0; margin-top: 3px; }
+
+.fill-input { width: 100%; font-family: 'Noto Serif JP', serif; font-size: 16px; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; outline: none; transition: border-color .15s; line-height: 1.8; }
+.fill-input:focus { border-color: var(--ink); background: var(--surface); }
+.fill-input:disabled { opacity: .7; }
+.fill-hint { font-size: 12px; color: var(--ink3); margin-top: 8px; }
+
+.area-input { width: 100%; font-family: 'Noto Serif JP', serif; font-size: 15px; color: var(--ink); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; outline: none; resize: vertical; min-height: 100px; transition: border-color .15s; line-height: 2; }
+.area-input:focus { border-color: var(--ink); background: var(--surface); }
+.area-input:disabled { opacity: .7; }
+
+.situation-box { background: var(--bg2); border-radius: 8px; padding: 16px 18px; font-size: 14px; color: var(--ink2); line-height: 1.9; margin-bottom: 14px; border-left: 2px solid var(--ink3); }
+
+/* ── Buttons ── */
+.btn-row { display: flex; justify-content: flex-end; margin-top: 16px; gap: 10px; }
+.btn { font-family: 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; padding: 10px 22px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 6px; background: var(--surface); color: var(--ink); }
+.btn:hover { background: var(--bg2); }
+.btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn-primary:hover { opacity: .85; }
+.btn-primary:active { transform: scale(.98); }
+.btn:disabled { opacity: .35; cursor: not-allowed; transform: none !important; }
+
+/* ── Loading & Feedback ── */
+.loading { display: none; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--ink2); }
+.loading.on { display: flex; }
+.dots span { width: 4px; height: 4px; border-radius: 50%; background: var(--ink3); animation: blink 1.2s ease-in-out infinite; display: inline-block; margin-right: 3px; }
+.dots span:nth-child(2) { animation-delay: .2s; }
+.dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+.feedback { display: none; margin-top: 14px; border-radius: 8px; padding: 16px 18px; font-size: 13px; line-height: 1.9; border-left: 3px solid; animation: fadeIn .3s ease; }
+.feedback.on { display: block; }
+.feedback.correct { background: var(--green-light); border-color: var(--green); }
+.feedback.wrong { background: var(--red-light); border-color: var(--red); }
+.feedback-label { font-weight: 500; font-size: 11px; letter-spacing: .5px; margin-bottom: 4px; }
+.feedback.correct .feedback-label { color: var(--green); }
+.feedback.wrong .feedback-label { color: var(--red); }
+.feedback-body { color: var(--ink); font-size: 13px; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Results ── */
+.result-card { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; }
+.result-card.on { display: block; animation: fadeIn .4s ease; }
+.result-header { padding: 28px 28px 20px; border-bottom: 1px solid var(--border); }
+.score-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 14px; }
+.score-big { font-family: 'Noto Serif JP', serif; font-size: 56px; font-weight: 300; line-height: 1; }
+.score-of { font-size: 22px; color: var(--ink3); }
+.score-tag { font-size: 14px; color: var(--ink2); margin-left: 10px; }
+.err-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink3); margin-bottom: 6px; }
+.err-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.err-fill { height: 100%; border-radius: 3px; transition: width .7s ease; }
+.result-body { padding: 0 28px 24px; }
+.result-row { padding: 16px 0; border-bottom: 1px solid var(--border); }
+.result-row:last-child { border-bottom: none; }
+.result-q-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink3); margin-bottom: 6px; }
+.verdict { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; margin-bottom: 8px; }
+.v-ok { background: var(--green-light); color: var(--green); }
+.v-ng { background: var(--red-light); color: var(--red); }
+.result-analysis { font-size: 13px; color: var(--ink2); line-height: 1.9; background: var(--bg); border-radius: 6px; padding: 12px 14px; margin-top: 6px; }
+.result-analysis .ja { font-family: 'Noto Serif JP', serif; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+.diff-hint { margin-top: 16px; font-size: 13px; padding: 12px 14px; border-radius: 8px; }
+.diff-hint.up { background: var(--green-light); color: var(--green); }
+.diff-hint.down { background: var(--amber-light); color: var(--amber); }
+
+.obs-btn { display: flex; align-items: center; gap: 8px; font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--ink2); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; cursor: pointer; transition: all .15s; margin-top: 16px; }
+.obs-btn:hover { border-color: var(--ink2); color: var(--ink); }
+.obs-btn.saved { border-color: var(--green); color: var(--green); background: var(--green-light); }
+</style>
+</head>
+<body>
+
+<!-- ── Dev Setup Banner ── -->
+<div class="setup-banner">
+  <span class="setup-label">DEV · API KEY</span>
+  <input class="setup-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…  （貼入你的 Anthropic API Key）">
+  <button class="setup-save" onclick="saveKey()">儲存</button>
+  <span class="setup-status" id="key-status">✓ 已儲存</span>
+  <span class="setup-warn">⚠ 僅限本地測試，正式部署請改用後端 proxy</span>
+</div>
+
+<!-- ── Header ── -->
+<header class="header">
+  <span class="logo">日語練習</span>
+  <div class="header-meta">
+    <span class="chip">WEEK 1 · DAY 1</span>
+    <span class="chip">週一 · 30 min</span>
+    <span class="chip chip-red">N3</span>
+  </div>
+</header>
+<div class="prog-wrap"><div class="prog-fill" id="prog" style="width:20%"></div></div>
+
+<div class="main">
+
+<!-- ══ PART 1 · 語法學習 ══ -->
+<div class="part-head">
+  <span class="part-num">01</span>
+  <span class="part-title">今日語法</span>
+  <div class="part-line"></div>
+  <span class="part-time">10 min</span>
+</div>
+<div class="card">
+  <div class="grammar-why">
+    <span class="why-tag">N3 必考 ★★★★★</span>
+    <span class="why-tag">日常高頻使用</span>
+    <span class="why-tag">易混淆：ようにする</span>
+  </div>
+  <div class="grammar-title">〜ようになる</div>
+  <div class="grammar-sub">表示能力或習慣的<strong>自然變化</strong>。「變得能夠…」「開始…」<br>N3/N2 考試幾乎每屆必考，讀解文章也大量出現。</div>
+  <div class="grammar-pattern">
+    <strong>動詞辭書形</strong> ＋ ようになる　→　能力出現（變得能做）<br>
+    <strong>動詞ない形</strong> ＋ ようになる　→　習慣停止（變得不做）
+  </div>
+  <div class="divider"></div>
+  <div class="scene-label">例句</div>
+  <div class="ex-list">
+    <div class="ex-item">
+      <div class="ex-jp"><span class="k" onclick="toggleK(this)" data-r="れんしゅう" data-m="練習・練習">練習</span>したら、<span class="k" onclick="toggleK(this)" data-r="かんじ" data-m="漢字・中文漢字">漢字</span>が書ける<em>ようになった</em>。</div>
+      <div class="ex-tr">（練習之後，變得能夠寫漢字了。）</div>
+    </div>
+    <div class="ex-item">
+      <div class="ex-jp"><span class="k" onclick="toggleK(this)" data-r="こどものころ" data-m="子どもの頃・小時候">子どもの頃</span>は<span class="k" onclick="toggleK(this)" data-r="さかな" data-m="魚・魚">魚</span>が<span class="k" onclick="toggleK(this)" data-r="きらい" data-m="嫌い・討厭">嫌い</span>だったが、今は食べられる<em>ようになった</em>。</div>
+      <div class="ex-tr">（小時候討厭魚，現在變得能吃了。）</div>
+    </div>
+    <div class="ex-item">
+      <div class="ex-jp">毎日ニュースを聞いていたら、だんだん<span class="k" onclick="toggleK(this)" data-r="ないよう" data-m="内容・內容">内容</span>が分かる<em>ようになってきた</em>。</div>
+      <div class="ex-tr">（每天聽新聞，漸漸能理解內容了。）</div>
+    </div>
+  </div>
+  <div class="scene-label">使用場景短文</div>
+  <div class="scene-text">田中さんは去年まで、英語が<span class="k" onclick="toggleK(this)" data-r="ぜんぜん" data-m="全然・完全不">全然</span>話せませんでした。でも、毎日30分<span class="k" onclick="toggleK(this)" data-r="れんしゅう" data-m="練習・練習">練習</span>を<span class="k" onclick="toggleK(this)" data-r="つづ" data-m="続けた・持續">続けた</span><span class="k" onclick="toggleK(this)" data-r="けっか" data-m="結果・結果">結果</span>、今では<span class="k" onclick="toggleK(this)" data-r="かんたんなかいわ" data-m="簡単な会話・簡單對話">簡単な会話</span>ができる<em>ようになりました</em>。</div>
+  <div class="scene-q">📖 下線の「ようになりました」は何の変化を表していますか？</div>
+  <div class="divider"></div>
+  <div class="conf-label">⚠ 混淆提醒</div>
+  <table class="conf-table">
+    <tr><th>語法</th><th>性質</th><th>例</th><th>中文</th></tr>
+    <tr><td>ようになる</td><td>自然發生的變化</td><td>食べられるようになった</td><td>變得能夠…</td></tr>
+    <tr><td>ようにする</td><td>自己刻意去做</td><td>野菜を食べるようにした</td><td>讓自己去做…</td></tr>
+  </table>
+</div>
+
+<!-- ══ PART 2 · 情境選擇 ══ -->
+<div class="part-head" style="margin-top:32px">
+  <span class="part-num">02</span>
+  <span class="part-title">情境選擇</span>
+  <div class="part-line"></div>
+  <span class="part-time">5 min</span>
+</div>
+
+<div class="card">
+  <div class="q-num">問題 2-1</div>
+  <div class="q-context">情境：Aさんは健康のために、意識的に毎朝ジョギングをすることにした。（A 為了健康，有意識地決定每天早上慢跑。）</div>
+  <div class="q-text">Aさんは毎朝ジョギングする<span class="blank"></span>。</div>
+  <div class="choices" id="c2a">
+    <button class="choice" onclick="pick('c2a',0,'B')"><span class="choice-key">A</span>ようになりました（自然養成的習慣）</button>
+    <button class="choice" onclick="pick('c2a',1,'B')"><span class="choice-key">B</span>ようにしました（刻意決定去做）</button>
+    <button class="choice" onclick="pick('c2a',2,'B')"><span class="choice-key">C</span>ことになりました（因外部決定）</button>
+  </div>
+  <div class="feedback" id="fb2a"></div>
+</div>
+
+<div class="card">
+  <div class="q-num">問題 2-2</div>
+  <div class="q-context">情境：Bさんは三年間日本語を勉強して、今では自然にニュースが理解できる。（B 讀了三年日語，自然地能理解新聞了。）</div>
+  <div class="q-text">Bさんはニュースの内容が理解できる<span class="blank"></span>。</div>
+  <div class="choices" id="c2b">
+    <button class="choice" onclick="pick('c2b',0,'A')"><span class="choice-key">A</span>ようになりました（自然的能力變化）</button>
+    <button class="choice" onclick="pick('c2b',1,'A')"><span class="choice-key">B</span>ようにしました（刻意努力）</button>
+    <button class="choice" onclick="pick('c2b',2,'A')"><span class="choice-key">C</span>はずになりました（不正確的語法）</button>
+  </div>
+  <div class="feedback" id="fb2b"></div>
+</div>
+
+<!-- ══ PART 3 · 主動填空 ══ -->
+<div class="part-head" style="margin-top:32px">
+  <span class="part-num">03</span>
+  <span class="part-title">主動填空（無提示）</span>
+  <div class="part-line"></div>
+  <span class="part-time">5 min</span>
+</div>
+<div class="card">
+  <div class="q-num">問題 3</div>
+  <div class="q-text">日本語を一年間<span class="k" onclick="toggleK(this)" data-r="べんきょう" data-m="勉強・學習">勉強</span>して、ニュースが<span class="k" onclick="toggleK(this)" data-r="きとれる" data-m="聞き取れる・能夠聽懂">聞き取れる</span>＿＿＿＿＿＿＿。</div>
+  <input class="fill-input" id="q3" type="text" placeholder="請直接填入正確形式…" oninput="onQ3()">
+  <div class="fill-hint">提示：過去式。動詞可能形 ＋ ＿＿＿ た</div>
+  <div class="feedback" id="fb3"></div>
+</div>
+
+<!-- ══ PART 4 · 情境造句 ══ -->
+<div class="part-head" style="margin-top:32px">
+  <span class="part-num">04</span>
+  <span class="part-title">情境造句</span>
+  <div class="part-line"></div>
+  <span class="part-time">5 min</span>
+</div>
+<div class="card">
+  <div class="q-num">問題 4</div>
+  <div class="situation-box">你以前不敢一個人搭地鐵，來日本半年後，現在已經完全沒問題了。<br>請用「ようになる」描述這個變化（1–2 句）。</div>
+  <textarea class="area-input" id="q4" placeholder="一人で電車に乗れる…" oninput="checkReady()"></textarea>
+  <div class="loading" id="ld4"><div class="dots"><span></span><span></span><span></span></div>Claude 批改中…</div>
+  <div class="feedback" id="fb4"></div>
+</div>
+
+<!-- ══ PART 5 · 理解追問 ══ -->
+<div class="part-head" style="margin-top:32px">
+  <span class="part-num">05</span>
+  <span class="part-title">理解追問</span>
+  <div class="part-line"></div>
+  <span class="part-time">5 min</span>
+</div>
+<div class="card">
+  <div class="q-num">問題 5</div>
+  <div class="situation-box">「ようになる」と「ようにする」の違いを、<strong>自分の言葉で一言</strong>説明してください。<br><span style="font-size:12px;color:var(--ink3)">（中文或日文都可以，說出關鍵就好）</span></div>
+  <textarea class="area-input" id="q5" placeholder="ようになる は自然の変化で、ようにする は…" oninput="checkReady()"></textarea>
+  <div class="loading" id="ld5"><div class="dots"><span></span><span></span><span></span></div>Claude 批改中…</div>
+  <div class="feedback" id="fb5"></div>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" id="sub-btn" onclick="submitAll()" disabled>
+    提交全部答案
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div class="result-card" id="result-card">
+  <div class="result-header">
+    <div class="score-row">
+      <span class="score-big" id="score-big">–</span>
+      <span class="score-of">/ 5</span>
+      <span class="score-tag" id="score-tag"></span>
+    </div>
+    <div class="err-bar-label"><span>正確率</span><span id="err-pct">–</span></div>
+    <div class="err-bar"><div class="err-fill" id="err-fill" style="width:0%"></div></div>
+  </div>
+  <div class="result-body" id="result-body"></div>
+</div>
+<button class="obs-btn" id="obs-btn" style="display:none" onclick="copyObs()">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+  複製錯題筆記 → 存入 Obsidian
+</button>
+<div style="height:60px"></div>
+</div>
+
+<script>
+// ── API Key ──
+function saveKey() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) return;
+  sessionStorage.setItem('ak', k);
+  document.getElementById('key-status').classList.add('on');
+  setTimeout(() => document.getElementById('key-status').classList.remove('on'), 2000);
+}
+function getKey() { return sessionStorage.getItem('ak') || ''; }
+
+// ── State ──
+const S = { c2a: null, c2b: null, q3ok: null, r4: null, r5: null, q4v: '', q5v: '' };
+
+// ── Kanji ──
+function toggleK(el) {
+  const was = el.classList.contains('open');
+  document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open'));
+  if (!was) {
+    let p = el.querySelector('.k-popup');
+    if (!p) {
+      p = document.createElement('div');
+      p.className = 'k-popup';
+      el.appendChild(p);
+    }
+    p.innerHTML = `<div class="k-reading">${el.dataset.r}</div><div class="k-meaning">${el.dataset.m}</div><div class="add-vocab" onclick="addV(this,'${el.dataset.m}','${el.dataset.r}')">＋ 單字本</div>`;
+    el.classList.add('open');
+  }
+}
+document.addEventListener('click', e => { if (!e.target.closest('.k')) document.querySelectorAll('.k.open').forEach(k => k.classList.remove('open')); });
+function addV(btn, m, r) {
+  btn.textContent = '✓ 已加入'; btn.classList.add('saved');
+  const saved = JSON.parse(localStorage.getItem('vocab') || '[]');
+  if (!saved.find(v => v.m === m)) { saved.push({ m, r, date: new Date().toISOString().slice(0,10) }); localStorage.setItem('vocab', JSON.stringify(saved)); }
+}
+
+// ── Choices ──
+function pick(g, i, correct) {
+  if (S[g] !== null) return;
+  const btns = [...document.querySelectorAll(`#${g} .choice`)];
+  const letters = ['A','B','C'];
+  S[g] = letters[i];
+  const ok = letters[i] === correct;
+  btns[i].classList.add(ok ? 'correct' : 'wrong');
+  if (!ok) btns[letters.indexOf(correct)].classList.add('correct');
+  btns.forEach(b => { b.onclick = null; });
+
+  const msgs = {
+    'c2a': { ok: '正確！情境說「意識的に」→ 刻意決定的行為，所以用ようにする。', B: 'B 正確。情境含「意識的に（有意識地）」，這是刻意的行為，不是自然變化。', A: '這題關鍵詞是「意識的に（刻意地）」，代表是主動決定，不是自然發生的變化。', C: 'ことになる 表示因外部決定被安排，不符合此情境。' },
+    'c2b': { ok: '正確！三年自然練習後能力提升，是典型的ようになりました。', A: 'A 正確。「自然に」理解，是能力的自然增長，用ようになる。', B: 'ようにする 是刻意努力去做。但題目說「自然に」理解，代表是自然變化。', C: 'はずになりました 不是正確的語法組合。' }
+  };
+  const m = msgs[g];
+  const key = ok ? 'ok' : letters[i];
+  showFb(document.getElementById('fb' + (g === 'c2a' ? '2a' : '2b')), ok, m[key] || '請再複習混淆提醒表。');
+  checkReady();
+}
+
+function showFb(el, ok, msg) {
+  el.className = `feedback on ${ok ? 'correct' : 'wrong'}`;
+  el.innerHTML = `<div class="feedback-label">${ok ? '✓ 正確' : '✗ 錯誤'}</div><div class="feedback-body">${msg}</div>`;
+}
+
+// ── Q3 ──
+function onQ3() {
+  const v = document.getElementById('q3').value.trim();
+  const ok = ['ようになりました','ようになった'].some(c => v.includes(c));
+  if (v.length >= 5) {
+    S.q3ok = ok;
+    showFb(document.getElementById('fb3'), ok,
+      ok ? 'よくできました！「ようになりました」で能力変化を正しく表現できています。'
+         : `正解は「ようになりました」。あなたの答え：${v}`);
+  }
+  checkReady();
+}
+
+// ── Submit All ──
+async function submitAll() {
+  document.getElementById('sub-btn').disabled = true;
+  document.getElementById('prog').style.width = '70%';
+
+  // Finalize Q3
+  const q3v = document.getElementById('q3').value.trim();
+  if (S.q3ok === null) { S.q3ok = ['ようになりました','ようになった'].some(c => q3v.includes(c)); }
+
+  // Grade Q4 & Q5
+  S.q4v = document.getElementById('q4').value.trim();
+  S.q5v = document.getElementById('q5').value.trim();
+
+  document.getElementById('ld4').classList.add('on');
+  S.r4 = await grade(S.q4v,
+    `題目：用「ようになる」描述「以前不敢一個人搭地鐵，來日本半年後完全沒問題了」這個變化。\n學生答案：${S.q4v}`);
+  document.getElementById('ld4').classList.remove('on');
+  showFb(document.getElementById('fb4'), S.r4.ok, S.r4.msg);
+
+  document.getElementById('ld5').classList.add('on');
+  S.r5 = await grade(S.q5v,
+    `題目：用自己的話說明「ようになる」和「ようにする」的差異。\n學生答案：${S.q5v}`);
+  document.getElementById('ld5').classList.remove('on');
+  showFb(document.getElementById('fb5'), S.r5.ok, S.r5.msg);
+
+  document.getElementById('prog').style.width = '100%';
+  showResults();
+}
+
+async function grade(answer, ctx) {
+  if (!answer || answer.length < 2) return { ok: false, msg: '未作答。' };
+  const key = getKey();
+  if (!key) {
+    // Fallback without API
+    const hasYou = answer.includes('ようになり') || answer.includes('ようになっ') || answer.includes('ようになる') || answer.includes('自然') || answer.includes('変化');
+    return { ok: hasYou, msg: hasYou ? '包含關鍵概念，基本正確。（請設定 API Key 以獲得詳細批改）' : '請確認是否使用了「ようになる」語法。（請設定 API Key 以獲得詳細批改）' };
+  }
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 500,
+        messages: [{ role: 'user', content: `你是 JLPT N3 日語老師，批改以下學生作業。\n${ctx}\n\n只輸出 JSON，不要其他文字：\n{"correct":true/false,"explanation_zh":"中文解說2-3句","correction":"修正後的日文（若正確留空）","tip":"1句學習提示"}` }]
+      })
+    });
+    const data = await res.json();
+    const p = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    return { ok: p.correct, msg: `${p.explanation_zh}${p.correction ? `<br><br>✏️ 修正：<em>${p.correction}</em>` : ''}<br><br>💡 ${p.tip}` };
+  } catch(e) {
+    const hasYou = answer.includes('ようになり') || answer.includes('ようになっ') || answer.includes('ようになる') || answer.includes('自然') || answer.includes('変化');
+    return { ok: hasYou, msg: hasYou ? '包含關鍵概念，方向正確。（網路問題，無法取得詳細解析）' : '請確認語法使用。（網路問題，無法取得詳細解析）' };
+  }
+}
+
+// ── Results ──
+function showResults() {
+  const oks = [S.c2a === 'B', S.c2b === 'A', S.q3ok, S.r4?.ok, S.r5?.ok];
+  const total = oks.filter(Boolean).length;
+  const pct = Math.round(total / 5 * 100);
+
+  document.getElementById('score-big').textContent = total;
+  document.getElementById('score-tag').textContent = ['需要加強 💪','繼續努力 📖','不錯！ 👍','很好！ ⭐','完美！ 🎉'][total];
+  document.getElementById('err-pct').textContent = pct + '%';
+  const f = document.getElementById('err-fill');
+  f.style.width = pct + '%';
+  f.style.background = pct >= 80 ? 'var(--green)' : pct >= 60 ? 'var(--amber)' : 'var(--red)';
+
+  const rows = [
+    { label: '問題 2-1｜情境選擇', ok: oks[0], note: '關鍵詞「意識的に」→ 刻意行為 → ようにする' },
+    { label: '問題 2-2｜情境選擇', ok: oks[1], note: '「自然に」能力提升 → 自然變化 → ようになる' },
+    { label: '問題 3｜主動填空', ok: oks[2], note: '正解：聞き取れるようになりました（動詞可能形 ＋ ようになる ＋ 過去式）' },
+    { label: '問題 4｜情境造句', ok: oks[3], note: '' },
+    { label: '問題 5｜理解追問', ok: oks[4], note: '' },
+  ];
+
+  document.getElementById('result-body').innerHTML = rows.map(r => `
+    <div class="result-row">
+      <div class="result-q-label">${r.label}</div>
+      <div class="verdict ${r.ok ? 'v-ok' : 'v-ng'}">${r.ok ? '✓ 正確' : '✗ 錯誤'}</div>
+      ${!r.ok && r.note ? `<div class="result-analysis">${r.note}</div>` : ''}
+    </div>`).join('');
+
+  // Dynamic difficulty hint
+  const hint = document.createElement('div');
+  hint.className = `diff-hint ${pct >= 80 ? 'up' : 'down'}`;
+  hint.textContent = pct >= 80
+    ? '🎉 正確率高！明天練習加入「ために vs ようになる」對比題，難度提升一格。'
+    : '📌 ようになる 週三讀解會再出現，週日複盤重點練習。本週難度維持不變。';
+  document.getElementById('result-body').appendChild(hint);
+
+  document.getElementById('result-card').classList.add('on');
+  if (pct < 100) document.getElementById('obs-btn').style.display = 'flex';
+  document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Obsidian ──
+function copyObs() {
+  const today = new Date().toISOString().slice(0,10);
+  const oks = [S.c2a === 'B', S.c2b === 'A', S.q3ok, S.r4?.ok, S.r5?.ok];
+  let md = `---\ndate: ${today}\ngrammar: ようになる\ntag: #N3語法 #Week1 #反覆錯誤\n---\n\n## ようになる 練習記錄\n\n### 結果\n`;
+  const labels = ['問題2-1 情境選擇', '問題2-2 情境選擇', '問題3 主動填空', '問題4 情境造句', '問題5 理解追問'];
+  oks.forEach((ok, i) => { md += `- ${ok ? '○' : '✗'} ${labels[i]}\n`; });
+  md += `\n### 混淆重點\n- ようになる → 自然的能力/習慣變化\n- ようにする → 自己刻意去做\n\n### 要記住的例句\n- 練習したら、漢字が書けるようになった。\n- 日本に来て、一人で電車に乗れるようになりました。\n`;
+  if (S.r4 && !S.r4.ok) md += `\n### 造句錯誤記錄\n私の答え：${S.q4v}\n`;
+  navigator.clipboard.writeText(md).then(() => {
+    const btn = document.getElementById('obs-btn');
+    btn.classList.add('saved');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 已複製！貼入 Obsidian`;
+    setTimeout(() => { btn.classList.remove('saved'); btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2h6l4 4v8a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> 複製錯題筆記 → 存入 Obsidian`; }, 3000);
+  });
+}
+
+// ── Ready check ──
+function checkReady() {
+  const ok = S.c2a && S.c2b
+    && document.getElementById('q3').value.trim().length > 0
+    && document.getElementById('q4').value.trim().length > 3
+    && document.getElementById('q5').value.trim().length > 3;
+  document.getElementById('sub-btn').disabled = !ok;
+}
+</script>
+</body>
+</html>
