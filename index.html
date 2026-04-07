@@ -245,7 +245,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 
 <div class="card">
   <div class="q-num">問題 2-1</div>
-  <div class="q-context">情境：Aさんは健康のために、意識的に毎朝ジョギングをすることにした。（A 為了健康，有意識地決定每天早上慢跑。）</div>
+  <div class="q-context">情境：Aさんは<span class="k" onclick="toggleK(this)" data-r="けんこう" data-m="健康・健康">健康</span>のために、<span class="k" onclick="toggleK(this)" data-r="いしきてき" data-m="意識的・有意識地">意識的</span>に毎朝ジョギングをすることにした。（A 為了健康，有意識地決定每天早上慢跑。）</div>
   <div class="q-text">Aさんは毎朝ジョギングする<span class="blank"></span>。</div>
   <div class="choices" id="c2a">
     <button class="choice" onclick="pick('c2a',0,'B')"><span class="choice-key">A</span>ようになりました（自然養成的習慣）</button>
@@ -257,7 +257,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 
 <div class="card">
   <div class="q-num">問題 2-2</div>
-  <div class="q-context">情境：Bさんは三年間日本語を勉強して、今では自然にニュースが理解できる。（B 讀了三年日語，自然地能理解新聞了。）</div>
+  <div class="q-context">情境：Bさんは<span class="k" onclick="toggleK(this)" data-r="さんねんかん" data-m="三年間・三年期間">三年間</span><span class="k" onclick="toggleK(this)" data-r="にほんご" data-m="日本語・日語">日本語</span>を<span class="k" onclick="toggleK(this)" data-r="べんきょう" data-m="勉強・學習">勉強</span>して、今では<span class="k" onclick="toggleK(this)" data-r="しぜん" data-m="自然・自然地">自然</span>にニュースが<span class="k" onclick="toggleK(this)" data-r="りかい" data-m="理解・理解">理解</span>できる。（B 讀了三年日語，自然地能理解新聞了。）</div>
   <div class="q-text">Bさんはニュースの内容が理解できる<span class="blank"></span>。</div>
   <div class="choices" id="c2b">
     <button class="choice" onclick="pick('c2b',0,'A')"><span class="choice-key">A</span>ようになりました（自然的能力變化）</button>
@@ -277,8 +277,14 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 <div class="card">
   <div class="q-num">問題 3</div>
   <div class="q-text">日本語を一年間<span class="k" onclick="toggleK(this)" data-r="べんきょう" data-m="勉強・學習">勉強</span>して、ニュースが<span class="k" onclick="toggleK(this)" data-r="きとれる" data-m="聞き取れる・能夠聽懂">聞き取れる</span>＿＿＿＿＿＿＿。</div>
-  <input class="fill-input" id="q3" type="text" placeholder="請直接填入正確形式…" oninput="onQ3()">
+  <input class="fill-input" id="q3" type="text" placeholder="請直接填入正確形式…" oninput="checkReady()" onkeydown="if(event.key==='Enter')confirmQ3()">
   <div class="fill-hint">提示：過去式。動詞可能形 ＋ ＿＿＿ た</div>
+  <div class="btn-row" style="margin-top:12px">
+    <button class="btn btn-primary" id="q3-confirm" onclick="confirmQ3()" disabled>
+      確認答案
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
   <div class="feedback" id="fb3"></div>
 </div>
 
@@ -306,7 +312,7 @@ body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: va
 </div>
 <div class="card">
   <div class="q-num">問題 5</div>
-  <div class="situation-box">「ようになる」と「ようにする」の違いを、<strong>自分の言葉で一言</strong>説明してください。<br><span style="font-size:12px;color:var(--ink3)">（中文或日文都可以，說出關鍵就好）</span></div>
+  <div class="situation-box">「ようになる」と「ようにする」の<span class="k" onclick="toggleK(this)" data-r="ちがい" data-m="違い・差異">違い</span>を、<strong>自分の<span class="k" onclick="toggleK(this)" data-r="ことば" data-m="言葉・語言/話語">言葉</span>で一言</strong>説明してください。<br><span style="font-size:12px;color:var(--ink3)">（中文或日文都可以，說出關鍵就好）</span></div>
   <textarea class="area-input" id="q5" placeholder="ようになる は自然の変化で、ようにする は…" oninput="checkReady()"></textarea>
   <div class="loading" id="ld5"><div class="dots"><span></span><span></span><span></span></div>Claude 批改中…</div>
   <div class="feedback" id="fb5"></div>
@@ -455,15 +461,28 @@ function showFb(el, ok, msg) {
 }
 
 // ── Q3 ──
-function onQ3() {
+document.getElementById('q3').addEventListener('input', function() {
+  const hasVal = this.value.trim().length > 0;
+  document.getElementById('q3-confirm').disabled = !hasVal;
+  checkReady();
+});
+
+function confirmQ3() {
   const v = document.getElementById('q3').value.trim();
+  if (!v) return;
   const ok = ['ようになりました','ようになった'].some(c => v.includes(c));
-  if (v.length >= 5) {
-    S.q3ok = ok;
-    showFb(document.getElementById('fb3'), ok,
-      ok ? 'よくできました！「ようになりました」で能力変化を正しく表現できています。'
-         : `正解は「ようになりました」。あなたの答え：${v}`);
-  }
+  S.q3ok = ok;
+  // Lock input and button after confirming
+  document.getElementById('q3').disabled = true;
+  document.getElementById('q3-confirm').disabled = true;
+  document.getElementById('q3-confirm').textContent = ok ? '✓ 正確' : '✗ 確認完畢';
+  document.getElementById('q3-confirm').style.background = ok ? 'var(--green)' : 'var(--red)';
+  document.getElementById('q3-confirm').style.borderColor = ok ? 'var(--green)' : 'var(--red)';
+  showFb(document.getElementById('fb3'), ok,
+    ok
+      ? 'よくできました！「ようになりました」で能力の変化を正しく表現できています。'
+      : `正解は「<strong>ようになりました</strong>」。<br>あなたの答え：${v}<br><br>💡 動詞可能形（聞き取れる）＋ ようになりました`
+  );
   checkReady();
 }
 
@@ -580,7 +599,7 @@ function showResults() {
   document.getElementById('result-body').appendChild(hint);
 
   document.getElementById('result-card').classList.add('on');
-  if (pct < 100) document.getElementById('obs-btn').style.display = 'flex';
+  document.getElementById('obs-btn').style.display = 'flex';
   document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -635,8 +654,9 @@ function copyObs() {
 
 // ── Ready check ──
 function checkReady() {
+  const q3confirmed = S.q3ok !== null;
   const ok = S.c2a && S.c2b
-    && document.getElementById('q3').value.trim().length > 0
+    && q3confirmed
     && document.getElementById('q4').value.trim().length > 3
     && document.getElementById('q5').value.trim().length > 3;
   document.getElementById('sub-btn').disabled = !ok;
