@@ -83,8 +83,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink)
 .multi-blank{margin-bottom:14px}
 .multi-blank .qtext{font-size:15px;margin-bottom:8px}
 .intro-note{font-size:13px;color:var(--ink2);margin-bottom:14px;font-style:italic}
-/* Vocab */
-.vtable{width:100%;border-collapse:collapse;font-size:13px}
+ruby{ruby-align:center}
+rt{font-size:10px;color:var(--ink3);font-family:'Noto Sans JP',sans-serif;font-weight:400;line-height:1}
+.vtable td:first-child ruby rt{color:var(--ink3)}
+width:100%;border-collapse:collapse;font-size:13px}
 .vtable th{text-align:left;padding:7px 11px;background:var(--bg2);color:var(--ink2);font-size:11px;font-weight:500;border-bottom:1px solid var(--brd)}
 .vtable td{padding:9px 11px;border-bottom:1px solid var(--brd);line-height:1.6;vertical-align:top}
 .vtable tr:hover td{background:var(--bg)}
@@ -837,8 +839,29 @@ function renderReview(p){
   return `<div class="card"><div style="font-size:13px;color:var(--ink2);margin-bottom:14px">${p.note}</div>${items}</div>`;
 }
 
+// ── Furigana: wrap kanji with ruby reading ──
+function furi(word, reading) {
+  return `<ruby>${word}<rt>${reading}</rt></ruby>`;
+}
+
+// Auto-add furigana for known kanji in a string (for choice options & ctx)
+function furiAuto(text) {
+  let out = text;
+  for (const [k, [r]] of Object.entries(KD)) {
+    const re = new RegExp(k, 'g');
+    out = out.replace(re, `<ruby>${k}<rt>${r}</rt></ruby>`);
+  }
+  return out;
+}
+
 function renderVocab(p){
-  const rows=p.words.map(w=>`<tr><td><span class="k" onclick="toggleK(this)" data-r="${w.r}" data-m="${w.w}・${w.m}">${w.w}</span></td><td>${w.r}</td><td>${w.pos}</td><td>${w.m}</td><td style="color:var(--ink2)">${w.ex}</td></tr>`).join('');
+  const rows=p.words.map(w=>`<tr>
+    <td><ruby style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:500">${w.w}<rt style="font-size:11px;color:var(--ink3)">${w.r}</rt></ruby></td>
+    <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--ink3)">${w.r}</td>
+    <td>${w.pos}</td>
+    <td>${w.m}</td>
+    <td style="color:var(--ink2)">${furiAuto(w.ex)}</td>
+  </tr>`).join('');
   return `<div class="card"><div style="font-size:13px;color:var(--ink2);margin-bottom:14px">${p.note}</div><table class="vtable"><tr><th>單字</th><th>讀音</th><th>詞性</th><th>中文</th><th>例句</th></tr>${rows}</table></div>`;
 }
 
@@ -866,9 +889,9 @@ function renderQ(q){
 }
 
 function renderChoice(q){
-  const ctx=q.ctx?`<div class="qctx">${kify(q.ctx)}</div>`:'';
-  const opts=q.opts.map((o,i)=>`<button class="choice" id="${q.id}_${i}" onclick="pickChoice('${q.id}',${i},${q.ans})"><span class="ckey">${String.fromCharCode(65+i)}</span>${o}</button>`).join('');
-  return `<div class="card"><div class="qnum">${q.num}</div>${ctx}<div class="qtext">${kify(q.text)}</div><div class="choices">${opts}</div><div class="fb" id="fb_${q.id}"></div></div>`;
+  const ctx=q.ctx?`<div class="qctx">${furiAuto(kify(q.ctx))}</div>`:'';
+  const opts=q.opts.map((o,i)=>`<button class="choice" id="${q.id}_${i}" onclick="pickChoice('${q.id}',${i},${q.ans})"><span class="ckey">${String.fromCharCode(65+i)}</span>${furiAuto(o)}</button>`).join('');
+  return `<div class="card"><div class="qnum">${q.num}</div>${ctx}<div class="qtext">${furiAuto(kify(q.text))}</div><div class="choices">${opts}</div><div class="fb" id="fb_${q.id}"></div></div>`;
 }
 
 function renderFill(q){
@@ -1044,29 +1067,33 @@ async function submitAll(){
     if(q.t==='choice'){
       const idx=ST.choices[q.id]??-1;
       const ok=idx===q.ans;
-      results.push({id:q.id,label:q.num,ok,note:ok?null:(q.ng[idx]||'請再看看混淆提醒表。')});
+      const userAns=idx>=0?`選 ${String.fromCharCode(65+idx)}：${q.opts[idx]}`:'（未作答）';
+      const correctAns=`選 ${String.fromCharCode(65+q.ans)}：${q.opts[q.ans]}`;
+      results.push({id:q.id,label:q.num,ok,userAns,correctAns,note:ok?null:(q.ng[idx]||'請再看看混淆提醒表。'),type:'choice'});
     }
     if(q.t==='fill'){
       const r=ST.fills[q.id];
-      results.push({id:q.id,label:q.num,ok:r?.ok??false,note:r?.ok?null:q.ng});
+      const userAns=r?.v||'（未作答）';
+      const correctAns=q.ans[0];
+      results.push({id:q.id,label:q.num,ok:r?.ok??false,userAns,correctAns,note:r?.ok?null:q.ng,type:'fill',question:q.text});
     }
     if(q.t==='compose'){
       const v=ST.composes[q.id]||'';
       const r=gradeCompose(q,v);
       showFb(`fb_${q.id}`,r.ok,r.msg);
-      results.push({id:q.id,label:q.num||'造句',ok:r.ok,note:r.ok?null:r.msg,gkey:q.gkey});
+      results.push({id:q.id,label:q.num||'造句',ok:r.ok,userAns:v||'（未作答）',correctAns:q.ex,note:r.ok?null:r.msg,gkey:q.gkey,type:'compose',sit:q.sit});
     }
     if(q.t==='understand'){
       const v=ST.composes[q.id]||'';
       const r=gradeUnderstand(q,v);
       showFb(`fb_${q.id}`,r.ok,r.msg);
-      results.push({id:q.id,label:q.num,ok:r.ok,note:r.ok?null:r.msg});
+      results.push({id:q.id,label:q.num,ok:r.ok,userAns:v||'（未作答）',correctAns:q.expl,note:r.ok?null:r.msg,type:'understand'});
     }
     if(q.t==='open'){
       const v=ST.composes[q.id]||'';
       const r=gradeOpen(q,v);
       showFb(`fb_${q.id}`,r.ok,r.msg);
-      results.push({id:q.id,label:q.num,ok:r.ok,note:r.ok?null:r.msg});
+      results.push({id:q.id,label:q.num,ok:r.ok,userAns:v||'（未作答）',correctAns:q.model,note:r.ok?null:r.msg,type:'open',question:q.text});
     }
   });
 
@@ -1112,7 +1139,24 @@ function saveProgress(results){
   const prog=getProgress();
   const gerrs={};
   results.forEach(r=>{if(r.gkey) gerrs[r.gkey]=!r.ok;});
-  prog[`day_${DAY}`]={completed:true,score:correct,total,pct,date:new Date().toISOString().slice(0,10),vocab:ST.vocab.length,grammar_errors:gerrs,errors:results.filter(r=>!r.ok).map(r=>r.label)};
+  // Save full detail for each result (including user input)
+  const details=results.map(r=>({
+    label:r.label,
+    ok:r.ok,
+    type:r.type,
+    userAns:r.userAns,
+    correctAns:r.correctAns,
+    note:r.note,
+    question:r.question||r.sit||''
+  }));
+  prog[`day_${DAY}`]={
+    completed:true,score:correct,total,pct,
+    date:new Date().toISOString().slice(0,10),
+    vocab:ST.vocab.length,
+    grammar_errors:gerrs,
+    errors:results.filter(r=>!r.ok).map(r=>r.label),
+    details
+  };
   localStorage.setItem('n2_progress',JSON.stringify(prog));
 }
 
@@ -1128,18 +1172,82 @@ function dlRecord(){
   const prog=getProgress();
   const d=prog[`day_${DAY}`];
   if(!d) return;
-  let md=`---\ndate: ${today}\nday: ${DAY}\ntopic: ${META.topic}\nscore: ${d.score}/${d.total}\naccuracy: ${d.pct}%\ntag: #N3語法 #Week${META.week}\n---\n\n# ${today} · Day ${DAY} · ${META.topic}\n\n## 練習結果\n\n| 題目 | 結果 |\n|------|------|\n`;
-  (d.errors||[]).forEach(e=>{md+=`| ${e} | ✗ 錯誤 |\n`;});
-  md+=`\n分數：${d.score}/${d.total}（${d.pct}%）\n`;
-  if(d.errors&&d.errors.length>0) md+=`\n## 錯題\n\n${d.errors.map(e=>`- ${e}`).join('\n')}\n`;
-  if(ST.vocab&&ST.vocab.length>0){
-    md+=`\n## 今日單字本（${ST.vocab.length} 個）\n\n| 單字 | 讀音 | 意思 |\n|------|------|------|\n`;
-    ST.vocab.forEach(v=>{const w=v.m.split('・')[0];const mn=v.m.split('・')[1]||'';md+=`| ${w} | ${v.r} | ${mn} |\n`;});
+
+  const correct=d.score, total=d.total, pct=d.pct;
+  const details=d.details||[];
+  const wrongItems=details.filter(r=>!r.ok);
+  const rightItems=details.filter(r=>r.ok);
+
+  // ── Frontmatter ──
+  let md=`---
+date: ${today}
+day: ${DAY}
+topic: ${META.topic}
+score: ${correct}/${total}
+accuracy: ${pct}%
+tag: #N3語法 #Week${META.week}
+---
+
+# ${today} · Day ${DAY} · ${META.topic}
+
+## 練習結果總覽
+
+| 題目 | 結果 | 我的答案 |
+|------|------|---------|
+`;
+  details.forEach(r=>{
+    const ans=(r.userAns||'').replace(/\n/g,' ').slice(0,60);
+    md+=`| ${r.label} | ${r.ok?'○ 正確':'✗ 錯誤'} | ${ans} |\n`;
+  });
+  md+=`\n**分數：${correct}/${total}（${pct}%）**\n`;
+
+  // ── 錯題詳細 ──
+  if(wrongItems.length>0){
+    md+=`\n---\n\n## 錯題詳細分析（${wrongItems.length} 題）\n`;
+    wrongItems.forEach((r,i)=>{
+      md+=`\n### ${i+1}. ${r.label}\n`;
+      if(r.question) md+=`**題目：** ${r.question.replace(/＿+/g,'___')}\n\n`;
+      md+=`**我的答案：**\n> ${(r.userAns||'（未作答）').replace(/\n/g,'\n> ')}\n\n`;
+      md+=`**正確答案：**\n> ${(r.correctAns||'').replace(/\n/g,'\n> ')}\n\n`;
+      if(r.note){
+        const cleanNote=r.note.replace(/<[^>]+>/g,'').replace(/✏️/g,'').trim();
+        md+=`**解析：** ${cleanNote}\n`;
+      }
+    });
   }
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown'}));a.download=`${today}-Day${DAY}-${META.topic}.md`;a.click();
+
+  // ── 正確題目（保留記錄）──
+  if(rightItems.length>0){
+    md+=`\n---\n\n## 正確題目（${rightItems.length} 題）\n`;
+    rightItems.forEach(r=>{
+      const ans=(r.userAns||'').replace(/\n/g,' ').slice(0,80);
+      md+=`- **${r.label}**：${ans}\n`;
+    });
+  }
+
+  // ── 單字本 ──
+  if(ST.vocab&&ST.vocab.length>0){
+    md+=`\n---\n\n## 今日單字本（${ST.vocab.length} 個）\n\n| 單字 | 讀音 | 意思 | 來源 |\n|------|------|------|------|\n`;
+    ST.vocab.forEach(v=>{
+      const w=v.m.split('・')[0];
+      const mn=v.m.split('・')[1]||'';
+      const src=(v.ex||'').slice(0,40);
+      md+=`| ${w} | ${v.r} | ${mn} | ${src} |\n`;
+    });
+  }
+
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown;charset=utf-8'}));
+  a.download=`${today}-Day${DAY}-${META.topic}.md`;
+  a.click();
+
   const btn=document.getElementById('dl-btn');
-  btn.classList.add('saved');btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>已下載！拖入 Obsidian 資料夾';
-  setTimeout(()=>{btn.classList.remove('saved');btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>下載今日學習紀錄 (.md)';},3000);
+  btn.classList.add('saved');
+  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>已下載！拖入 Obsidian 資料夾';
+  setTimeout(()=>{
+    btn.classList.remove('saved');
+    btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>下載今日學習紀錄 (.md)';
+  },3000);
 }
 
 // ═══════════════════════════════════════════════════
