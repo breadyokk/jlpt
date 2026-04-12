@@ -83,7 +83,24 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--ink)
 .multi-blank{margin-bottom:14px}
 .multi-blank .qtext{font-size:15px;margin-bottom:8px}
 .intro-note{font-size:13px;color:var(--ink2);margin-bottom:14px;font-style:italic}
-ruby{ruby-align:center}
+/* Compose mode toggle */
+.mode-toggle-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:14px}
+.mode-toggle-row .toggle-lbl{font-size:12px;color:var(--ink2)}
+.tpill{width:36px;height:20px;background:var(--brd);border-radius:10px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tpill.on{background:var(--ink)}
+.tpill::after{content:'';position:absolute;width:14px;height:14px;background:var(--sf);border-radius:50%;top:3px;left:3px;transition:transform .2s}
+.tpill.on::after{transform:translateX(16px)}
+.ctag-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.ctag{background:var(--bg2);border:1.5px solid var(--brd);border-radius:20px;padding:5px 14px;font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink2);cursor:pointer;transition:all .15s;user-select:none}
+.ctag:hover{border-color:var(--ink2)}
+.ctag.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mc-choices-compose{display:flex;flex-direction:column;gap:8px}
+.mcc-btn{text-align:left;background:var(--bg);border:1.5px solid var(--brd);border-radius:8px;padding:12px 16px;font-family:'Noto Serif JP',serif;font-size:14px;color:var(--ink);cursor:pointer;line-height:1.8;transition:all .15s}
+.mcc-btn:hover:not(:disabled){border-color:var(--ink2);background:var(--bg2)}
+.mcc-btn.correct{border-color:var(--green);background:var(--gl);color:var(--green)}
+.mcc-btn.wrong{border-color:var(--red);background:var(--rl);color:var(--red)}
+.mcc-btn.reveal{border-color:var(--green);background:var(--gl);color:var(--green);opacity:.7}
+
 rt{font-size:10px;color:var(--ink3);font-family:'Noto Sans JP',sans-serif;font-weight:400;line-height:1}
 .vtable td:first-child ruby rt{color:var(--ink3)}
 width:100%;border-collapse:collapse;font-size:13px}
@@ -640,21 +657,21 @@ const C = {
         }
       ]},
       {type:'qs',num:'04',label:'今週4語法混合填空（無提示）',time:25,items:[
-        {t:'fill',id:'q_5_4a',num:'① ようになる',
+        {t:'fill',id:'q_5_4a',num:'問題①',
           text:'毎日漢字を練習したら、だんだん読める＿＿＿＿＿＿＿。',hint:'',
-          ans:['ようになった','ようになりました'],ok:'ようになる 正確！',ng:'自然に能力がついた → ようになる。'
+          ans:['ようになった','ようになりました'],ok:'ようになる 正確！',ng:'自然に能力がついた → ようになる（動詞可能形＋ようになる）。'
         },
-        {t:'fill',id:'q_5_4b',num:'② ために',
+        {t:'fill',id:'q_5_4b',num:'問題②',
           text:'N2に合格する＿＿＿、毎日２時間以上勉強しています。',hint:'',
-          ans:['ために','ため'],ok:'ために 正確！',ng:'目的を表す → ために。'
+          ans:['ために','ため'],ok:'ために 正確！',ng:'目的を表す → ために（辞書形＋ために）。'
         },
-        {t:'fill',id:'q_5_4c',num:'③ はずだ',
+        {t:'fill',id:'q_5_4c',num:'問題③',
           text:'彼はもう連絡をくれた＿＿＿なのに、まだメールが来ない。',hint:'',
-          ans:['はずだ','はずです','はず'],ok:'はずだ 正確！',ng:'根拠のある確信 → はずだ。'
+          ans:['はずだ','はずです','はず'],ok:'はずだ 正確！',ng:'根拠のある確信 → はずだ（た形＋はずだ）。'
         },
-        {t:'fill',id:'q_5_4d',num:'④ てしまう',
+        {t:'fill',id:'q_5_4d',num:'問題④',
           text:'昨日の夜、ドラマを見ながらケーキを全部食べて＿＿＿＿＿。',hint:'',
-          ans:['しまった','しまいました','ちゃった'],ok:'てしまう 正確！',ng:'食べてしまった（遺憾または完了）。'
+          ans:['しまった','しまいました','ちゃった'],ok:'てしまう 正確！',ng:'食べてしまった（て形＋しまった）。'
         }
       ]},
       {type:'qs',num:'05',label:'情境造句（4語法）',time:10,items:[
@@ -664,7 +681,40 @@ const C = {
           req:['ために'],
           good:['ようになる','てしまう','はずだ','ために'],
           ex:'N2に合格するために毎日勉強しています。読む速度が速くなるようになりました。昨日夜更かしをしてしまいました。努力すれば合格できるはずです。',
-          gkey:'4語法綜合'
+          gkey:'4語法綜合',
+          mcTags:['ために','ようになる','てしまう','はずだ'],
+          mcOpts:{
+            'ために':[
+              {text:'N2に合格するために、毎日２時間以上勉強しています。',correct:true},
+              {text:'N2に合格するように、毎日２時間以上勉強しています。',correct:false},
+              {text:'速く読めるために、毎日練習しています。',correct:false},
+              {text:'毎日勉強するために、N2に合格しました。',correct:false}
+            ],
+            'ようになる':[
+              {text:'３ヶ月練習して、速く読めるようになりました。',correct:true},
+              {text:'速く読むために、３ヶ月練習しました。',correct:false},
+              {text:'速く読めるようにしました。',correct:false},
+              {text:'読めるようになるに、毎日練習しています。',correct:false}
+            ],
+            'てしまう':[
+              {text:'昨日夜遅くまで勉強して、スケジュールを崩してしまいました。',correct:true},
+              {text:'スケジュールを崩すために、夜遅く勉強しました。',correct:false},
+              {text:'昨日夜遅く勉強したので、スケジュールが崩れるはずです。',correct:false},
+              {text:'スケジュールを崩してしまうように、勉強しました。',correct:false}
+            ],
+            'はずだ':[
+              {text:'努力を続ければ、N2に合格できるはずです。',correct:true},
+              {text:'N2に合格できるはずだから、もう勉強しません。',correct:false},
+              {text:'努力するはずです、N2に合格できます。',correct:false},
+              {text:'努力を続ければ、N2に合格するために頑張ります。',correct:false}
+            ]
+          },
+          mcFb:{
+            'ために':{ok:'✓ 正確！ ために は辞書形（意志動詞）＋ために。「合格する」は意志動詞 ✓',ng:'ために 前は辞書形意志動詞。「速く読める」は可能動詞なので ように を使う。'},
+            'ようになる':{ok:'✓ 正確！ 可能形（読める）＋ようになる。能力的自然變化。',ng:'ようになる は可能形＋ようになる。ようにする は刻意努力，注意差異。'},
+            'てしまう':{ok:'✓ 正確！ て形＋しまう。崩してしまった ＝ 不小心把計劃打亂了（遺憾）。',ng:'てしまう はて形＋しまう。表達後悔・意外・完了。語法位置要在動詞直後。'},
+            'はずだ':{ok:'✓ 正確！ 辞書形＋はずだ。有根據的確信：努力を続ければ → 合格できるはず。',ng:'はずだ は辞書形＋はずだ。表達說話者有根據的確信，注意句意邏輯。'}
+          }
         }
       ]},
       {type:'qs',num:'06',label:'理解追問',time:5,items:[
@@ -898,8 +948,122 @@ function renderFill(q){
   return `<div class="card"><div class="qnum">${q.num}</div><div class="qtext">${kify(q.text)}</div><input class="fill-in" id="${q.id}" type="text" placeholder="請直接填入正確形式…" oninput="onFillInput('${q.id}')" onkeydown="if(event.key==='Enter')confirmFill('${q.id}')"><div class="hint">${q.hint}</div><div class="btn-row"><button class="btn btn-p" id="cfm_${q.id}" onclick="confirmFill('${q.id}')" disabled>確認答案 →</button></div><div class="fb" id="fb_${q.id}"></div></div>`;
 }
 
+// Track compose mode per question (false = free write, true = MC)
+const composeModes = {};
+const composeActiveTags = {};
+
 function renderCompose(q){
-  return `<div class="card"><div class="qnum">${q.num||''}</div><div class="sitbox">${q.sit}</div><textarea class="area-in" id="${q.id}" placeholder="${q.ph}" oninput="onTextarea('${q.id}')"></textarea><div class="ld" id="ld_${q.id}"><div class="dots"><span></span><span></span><span></span></div>批改中…</div><div class="fb" id="fb_${q.id}"></div></div>`;
+  const hasMC = !!(q.mcOpts && q.mcTags);
+  const freeId = `cw_${q.id}`, mcId = `cm_${q.id}`;
+  const fbFreeId = `fb_${q.id}`, fbMcId = `fbmc_${q.id}`;
+
+  // Tag row (only if mcTags defined)
+  let tagRow = '';
+  if(hasMC) {
+    const tags = q.mcTags.map((t,i) =>
+      `<div class="ctag${i===0?' active':''}" id="ctag_${q.id}_${i}" onclick="selectCTag('${q.id}','${t}',this)">${t}</div>`
+    ).join('');
+    tagRow = `<div class="ctag-row">${tags}</div>`;
+  }
+
+  // Toggle button (only if mcOpts)
+  const toggleBtn = hasMC
+    ? `<div class="mode-toggle-row">
+        <span class="toggle-lbl" id="ctlbl_${q.id}">✏️ 自由造句</span>
+        <div class="tpill" id="tpill_${q.id}" onclick="toggleComposeMode('${q.id}')"></div>
+        <span class="toggle-lbl" style="color:var(--ink3)">選擇題</span>
+       </div>`
+    : '';
+
+  // MC choices container
+  const mcBlock = hasMC
+    ? `<div id="${mcId}" style="display:none">
+        <div class="mc-choices-compose" id="mcc_${q.id}"></div>
+        <div class="fb" id="${fbMcId}"></div>
+       </div>`
+    : '';
+
+  return `<div class="card">
+    <div class="qnum">${q.num||''}</div>
+    <div class="sitbox">${q.sit}</div>
+    ${tagRow}
+    ${toggleBtn}
+    <div id="${freeId}">
+      <textarea class="area-in" id="${q.id}" placeholder="${q.ph}" oninput="onTextarea('${q.id}')"></textarea>
+      <div class="ld" id="ld_${q.id}"><div class="dots"><span></span><span></span><span></span></div>批改中…</div>
+      <div class="fb" id="${fbFreeId}"></div>
+    </div>
+    ${mcBlock}
+  </div>`;
+}
+
+function toggleComposeMode(qid){
+  composeModes[qid] = !composeModes[qid];
+  const isMC = composeModes[qid];
+  const pill = document.getElementById(`tpill_${qid}`);
+  const lbl = document.getElementById(`ctlbl_${qid}`);
+  pill.classList.toggle('on', isMC);
+  lbl.textContent = isMC ? '🔘 選擇題' : '✏️ 自由造句';
+  document.getElementById(`cw_${qid}`).style.display = isMC ? 'none' : '';
+  document.getElementById(`cm_${qid}`).style.display = isMC ? '' : 'none';
+  if(isMC) renderComposeMC(qid);
+  // clear feedbacks
+  const fbFree = document.getElementById(`fb_${qid}`);
+  const fbMc = document.getElementById(`fbmc_${qid}`);
+  if(fbFree) fbFree.className='fb';
+  if(fbMc) fbMc.className='fb';
+}
+
+function selectCTag(qid, tag, el){
+  composeActiveTags[qid] = tag;
+  document.querySelectorAll(`[id^="ctag_${qid}_"]`).forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  if(composeModes[qid]) renderComposeMC(qid);
+  const fbFree = document.getElementById(`fb_${qid}`);
+  const fbMc = document.getElementById(`fbmc_${qid}`);
+  if(fbFree) fbFree.className='fb';
+  if(fbMc) fbMc.className='fb';
+}
+
+function renderComposeMC(qid){
+  const q = findQ(qid);
+  if(!q||!q.mcOpts) return;
+  const tag = composeActiveTags[qid] || q.mcTags[0];
+  const opts = q.mcOpts[tag] || [];
+  const shuffled = [...opts].sort(() => Math.random() - 0.5);
+  const container = document.getElementById(`mcc_${qid}`);
+  container.innerHTML = shuffled.map(o =>
+    `<button class="mcc-btn" onclick="pickMCC(this,'${qid}','${tag}',${o.correct})">${o.text}</button>`
+  ).join('');
+}
+
+function pickMCC(btn, qid, tag, isCorrect){
+  const q = findQ(qid);
+  const all = btn.parentElement.querySelectorAll('.mcc-btn');
+  all.forEach(b => { b.disabled = true; b.onclick = null; });
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect) {
+    all.forEach(b => {
+      if(b.onclick === null && b !== btn && b.textContent) {
+        // find the correct one by checking the data
+        const opts = q.mcOpts[tag] || [];
+        const match = opts.find(o => o.correct && b.textContent.trim() === o.text.trim());
+        if(match) b.classList.add('reveal');
+      }
+    });
+    // simpler: just reveal correct from opts
+    const correctText = (q.mcOpts[tag]||[]).find(o=>o.correct)?.text;
+    all.forEach(b => { if(b.textContent.trim()===correctText) b.classList.add('reveal'); });
+  }
+  const fb = document.getElementById(`fbmc_${qid}`);
+  const fbData = q.mcFb?.[tag];
+  if(fb && fbData) {
+    fb.className = `fb on ${isCorrect?'ok':'ng'}`;
+    fb.innerHTML = `<div class="fb-lbl">${isCorrect?'✓ 正確':'✗ 錯誤'}</div><div class="fb-body">${fbData[isCorrect?'ok':'ng']}</div>`;
+  }
+  // Also update ST for grading
+  if(!ST.composes[qid]) ST.composes[qid] = isCorrect ? (q.mcOpts[tag]||[]).find(o=>o.correct)?.text || '' : '';
+  checkSubmitReady();
 }
 
 function renderUnderstand(q){
